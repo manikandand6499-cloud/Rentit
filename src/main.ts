@@ -20,7 +20,7 @@ async function bootstrap() {
     allowedHeaders: "Content-Type, Authorization",
   });
 
-  // Enable Global Validation Pipe
+  // Enable Global Validation Pipe,,,
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,              // Removes properties not in DTO
@@ -32,7 +32,7 @@ async function bootstrap() {
   const PORT = process.env.PORT || 5000;
 
   await app.listen(PORT);
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port is ${PORT}`);
 }
 
 bootstrap();
