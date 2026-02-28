@@ -37,12 +37,12 @@ export class AuthService {
 
     // send sms using Twilio
     await this.twilioClient.messages.create({
-      body: `your OTP is : ${otp}`,
+      body: `your otp is : ${otp}`,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: `+91${mobile}`,   // India format
     });
 
-    return { message: "OTP sent successfully" };
+    return { message: "Otp is sent successfully" };
   }
 
   async verifyOtp(mobile: string, otp: string) {
