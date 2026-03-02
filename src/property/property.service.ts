@@ -34,17 +34,19 @@ export class PropertyService {
     });
   }
 
-  async updateAmenities(id: number, data: CreateAmenitiesDto) {
-    await this.checkProperty(id);
+async updateAmenities(id: number, data: CreateAmenitiesDto) {
+  await this.checkProperty(id);
 
-    return this.prisma.property.update({
-      where: { id },
-      data: {
-        ...data,
-        currentStep: 3,
-      },
-    });
-  }
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      parking: data.parking,
+      gateSecurity: data.gateSecurity,
+      furnishing: data.furnishing,
+      currentStep: 3,
+    },
+  });
+}
 async verifyProperty(id: number) {
   await this.checkProperty(id);
 
@@ -74,6 +76,29 @@ async verifyProperty(id: number) {
       where: { id },
     });
   }
+async saveImages(id: number, images: string[]) {
+  await this.checkProperty(id);
+
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      images,
+      currentStep: 5,
+    },
+  });
+}
+
+async saveVideo(id: number, video: string) {
+  await this.checkProperty(id);
+
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      video,
+    },
+  });
+}
+
 
   private async checkProperty(id: number) {
     const property = await this.prisma.property.findUnique({
