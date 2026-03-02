@@ -45,7 +45,17 @@ export class PropertyService {
       },
     });
   }
+async verifyProperty(id: number) {
+  await this.checkProperty(id);
 
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      currentStep: 7,
+      isDraft: false,
+    },
+  });
+}
   async updatePrice(id: number, data: CreatePriceDto) {
     await this.checkProperty(id);
 

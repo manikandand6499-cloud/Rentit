@@ -33,4 +33,9 @@ export class PropertyController {
   getProperty(@Param('id') id: string) {
     return this.propertyService.getProperty(Number(id));
   }
+  @Put('verify/:id')
+verifyProperty(@Param('id') id: string) {
+  return this.propertyService.verifyProperty(Number(id));
+}
+  
 }
