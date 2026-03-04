@@ -8,11 +8,10 @@ datasource db {
 }
 
 model User {
-  id         Int        @id @default(autoincrement())
-  mobile     String     @unique
-  createdAt  DateTime   @default(now())
+  id        Int       @id @default(autoincrement())
+  mobile    String    @unique
+  createdAt DateTime  @default(now())
 
-  // relation
   properties Property[]
 }
 
@@ -25,139 +24,87 @@ model Otp {
 }
 
 model Property {
-  id             Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  /*
-  =========================
-  USER RELATION
-  =========================
-  */
-  userId         Int
-  user           User     @relation(fields: [userId], references: [id])
+  // ================= USER =================
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
-  /*
-  =========================
-  BASIC INFO
-  =========================
-  */
-  city           String
-  propertyType   String
-  propertyType2  String   @default("")
+  // ================= BASIC INFO =================
+  city          String
+  propertyType  String
+  propertyType2 String @default("")
 
-  propertyName   String?
-  category       String?
-  ownershipType  String?
-  bhkType        String?
+  propertyName  String?
+  category      String?
+  ownershipType String?
+  bhkType       String?
 
-  /*
-  =========================
-  PROPERTY DETAILS
-  =========================
-  */
-  floor          Int?
-  totalFloor     Int?
-  description    String?
+  // ================= PROPERTY DETAILS =================
+  floor         Int?
+  totalFloor    Int?
+  description   String?
 
-  builtUpArea    Float?
-  propertyAge    String?
-  facing         String?
-  noticePeriod   Int?
-  occupancy      String?
-  availableFrom  DateTime?
+  builtUpArea   Float?
+  propertyAge   String?
+  facing        String?
+  noticePeriod  Int?
+  occupancy     String?
+  availableFrom DateTime?
 
-  /*
-  =========================
-  SHARING / TENANT
-  =========================
-  */
-  sharingType      Json?
-  preferredTenant  Json?
+  // ================= SHARING =================
+  sharingType     Json?
+  preferredTenant Json?
 
-  /*
-  =========================
-  RULES
-  =========================
-  */
+  // ================= RULES =================
   rulesAndRegulation String?
 
-  /*
-  =========================
-  ROOM TYPES
-  =========================
-  */
-  roomType        Json?
+  // ================= ROOM =================
+  roomType Json?
 
-  /*
-  =========================
-  LOCATION
-  =========================
-  */
-  location        String?
-  street          String?
-  locality        String?
-  landmark        String?
-  pincode         String?
+  // ================= LOCATION =================
+  location String?
+  street   String?
+  locality String?
+  landmark String?
+  pincode  String?
 
-  /*
-  =========================
-  AMENITIES
-  =========================
-  */
+  // ================= AMENITIES =================
   parking          Json?
   restrictions     Json?
   furnishing       Json?
   societyAmenities Json?
 
-  foodIncluded     Boolean?
-  petAllowed       Boolean?
-  nonVegAllowed    Boolean?
-  gatedCommunity   Boolean?
-  gateSecurity     Boolean?
+  foodIncluded   Boolean?
+  petAllowed     Boolean?
+  nonVegAllowed  Boolean?
+  gatedCommunity Boolean?
+  gateSecurity   Boolean?
 
-  noOfFloors       String?
-  noOfBalcony      String?
+  noOfFloors  String?
+  noOfBalcony String?
 
-  /*
-  =========================
-  PRICE
-  =========================
-  */
+  // ================= PRICE =================
   rent           Float?
   maintenance    Float?
   deposit        Float?
   rentNegotiable Boolean?
 
-  /*
-  =========================
-  MEDIA
-  =========================
-  */
-  images         String[] @default([])
-  video          String?
+  // ================= MEDIA =================
+  images String[] @default([])
+  video  String?
 
-  /*
-  =========================
-  CONTACT
-  =========================
-  */
-  contactName    String?
-  mobileNo       String?
-  repliesWithin  String?
-  whatsapp       Boolean?
+  // ================= CONTACT =================
+  contactName   String?
+  mobileNo      String?
+  repliesWithin String?
+  whatsapp      Boolean?
 
-  /*
-  =========================
-  STATUS
-  =========================
-  */
-  currentStep    Int      @default(1)
-  isDraft        Boolean  @default(true)
+  // ================= STATUS =================
+  currentStep Int     @default(1)
+  isDraft     Boolean @default(true)
 
-  /*
-  =========================
-  TIMESTAMPS
-  =========================
-  */
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  // ================= TIMESTAMPS =================
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
