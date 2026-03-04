@@ -1,15 +1,57 @@
-import { IsOptional, IsNumber, IsBoolean } from 'class-validator';
+import {
+  IsOptional,
+  IsNumber,
+  IsBoolean
+} from 'class-validator';
+
+import { Type } from 'class-transformer';
 
 export class CreatePriceDto {
-  @IsOptional() @IsNumber()
+
+  /*
+  ==============================
+  RENT
+  ==============================
+  */
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   rent?: number;
 
-  @IsOptional() @IsNumber()
+
+  /*
+  ==============================
+  MAINTENANCE
+  ==============================
+  */
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   maintenance?: number;
 
-  @IsOptional() @IsNumber()
+
+  /*
+  ==============================
+  DEPOSIT
+  ==============================
+  */
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   deposit?: number;
 
-  @IsOptional() @IsBoolean()
+
+  /*
+  ==============================
+  RENT NEGOTIABLE
+  ==============================
+  */
+
+  @IsOptional()
+  @IsBoolean()
   rentNegotiable?: boolean;
+
 }

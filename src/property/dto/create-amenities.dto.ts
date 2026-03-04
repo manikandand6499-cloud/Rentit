@@ -1,21 +1,18 @@
-import { IsOptional, IsObject, IsBoolean, IsString } from "class-validator";
+import { IsOptional, IsBoolean, IsString } from "class-validator";
 
 export class CreateAmenitiesDto {
-  @IsOptional()
-  @IsObject()
-  furnishing?: Record<string, number>;
 
   @IsOptional()
-  @IsObject()
-  parking?: Record<string, number>;
+  parking?: any;
 
   @IsOptional()
-  @IsObject()
-  restrictions?: Record<string, boolean>;
+  restrictions?: any;
 
   @IsOptional()
-  @IsObject()
-  societyAmenities?: Record<string, boolean>;
+  furnishing?: any;
+
+  @IsOptional()
+  societyAmenities?: any;
 
   @IsOptional()
   @IsBoolean()
@@ -38,10 +35,10 @@ export class CreateAmenitiesDto {
   gateSecurity?: boolean;
 
   @IsOptional()
-  @IsString() // ✅ Fixed: Schema is String?, not Int
+  @IsString()
   noOfFloors?: string;
 
   @IsOptional()
-  @IsString() // ✅ Fixed: Schema is String?, not Int
+  @IsString()
   noOfBalcony?: string;
 }

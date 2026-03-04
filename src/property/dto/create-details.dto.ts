@@ -3,11 +3,18 @@ import {
   IsString,
   IsNumber,
   IsDateString,
-  IsArray,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+  IsArray
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateDetailsDto {
+
+  /*
+  ==============================
+  BASIC PROPERTY INFO
+  ==============================
+  */
+
   @IsOptional()
   @IsString()
   propertyName?: string;
@@ -17,12 +24,20 @@ export class CreateDetailsDto {
   category?: string;
 
   @IsOptional()
-  @IsString()
-  ownershipType?: string;
+  @IsArray()
+  @IsString({ each: true })
+  ownershipType?: string[];   // ✅ FIXED
 
   @IsOptional()
   @IsString()
   bhkType?: string;
+
+
+  /*
+  ==============================
+  FLOOR DETAILS
+  ==============================
+  */
 
   @IsOptional()
   @Type(() => Number)
@@ -33,6 +48,13 @@ export class CreateDetailsDto {
   @Type(() => Number)
   @IsNumber()
   totalFloor?: number;
+
+
+  /*
+  ==============================
+  PROPERTY DESCRIPTION
+  ==============================
+  */
 
   @IsOptional()
   @IsString()
@@ -51,6 +73,13 @@ export class CreateDetailsDto {
   @IsString()
   facing?: string;
 
+
+  /*
+  ==============================
+  TENANT DETAILS
+  ==============================
+  */
+
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
@@ -64,19 +93,49 @@ export class CreateDetailsDto {
   @IsDateString()
   availableFrom?: string;
 
+
+  /*
+  ==============================
+  PREFERRED TENANT
+  ==============================
+  */
+
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   preferredTenant?: string[];
 
+
+  /*
+  ==============================
+  RULES
+  ==============================
+  */
+
   @IsOptional()
   @IsString()
   rulesAndRegulation?: string;
 
+
+  /*
+  ==============================
+  ROOM TYPE
+  ==============================
+  */
+
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  roomType?: string[];
+  roomType?: {
+    type: string[];
+    rent?: number;
+    deposit?: number;
+  }[];
+
+
+  /*
+  ==============================
+  LOCATION DETAILS
+  ==============================
+  */
 
   @IsOptional()
   @IsString()

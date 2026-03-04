@@ -37,7 +37,6 @@ model Property {
 
   propertyName  String?
   category      String?
-  ownershipType String?
   bhkType       String?
 
   // ================= PROPERTY DETAILS =================
@@ -55,6 +54,7 @@ model Property {
   // ================= SHARING =================
   sharingType     Json?
   preferredTenant Json?
+  ownershipType   Json?   // ✅ ONLY JSON VERSION
 
   // ================= RULES =================
   rulesAndRegulation String?
