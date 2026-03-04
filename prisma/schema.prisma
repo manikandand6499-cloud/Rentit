@@ -11,6 +11,8 @@ model User {
   id         Int        @id @default(autoincrement())
   mobile     String     @unique
   createdAt  DateTime   @default(now())
+
+  // relation
   properties Property[]
 }
 
@@ -21,24 +23,41 @@ model Otp {
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
+
 model Property {
-  id             Int       @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
 
-  // 🔐 Relation
-  userId         Int?
-  user           User?     @relation(fields: [userId], references: [id])
+  /*
+  =========================
+  USER RELATION
+  =========================
+  */
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
 
-  // 🏠 Basic Info
+  /*
+  =========================
+  BASIC INFO
+  =========================
+  */
   city           String
   propertyType   String
+  propertyType2  String   @default("")
+
   propertyName   String?
   category       String?
   ownershipType  String?
+  bhkType        String?
 
-  // 🏢 Property Details
+  /*
+  =========================
+  PROPERTY DETAILS
+  =========================
+  */
   floor          Int?
   totalFloor     Int?
   description    String?
+
   builtUpArea    Float?
   propertyAge    String?
   facing         String?
@@ -46,32 +65,99 @@ model Property {
   occupancy      String?
   availableFrom  DateTime?
 
-  // 📍 Location
-  location       String?
-  street         String?
-  locality       String?
-  landmark       String?
-  pincode        String?
+  /*
+  =========================
+  SHARING / TENANT
+  =========================
+  */
+  sharingType      Json?
+  preferredTenant  Json?
 
-  // 🛠 Amenities
-  parking        String?
-  gateSecurity   Boolean?
-  furnishing     String?
+  /*
+  =========================
+  RULES
+  =========================
+  */
+  rulesAndRegulation String?
 
-  // 💰 Price Details
+  /*
+  =========================
+  ROOM TYPES
+  =========================
+  */
+  roomType        Json?
+
+  /*
+  =========================
+  LOCATION
+  =========================
+  */
+  location        String?
+  street          String?
+  locality        String?
+  landmark        String?
+  pincode         String?
+
+  /*
+  =========================
+  AMENITIES
+  =========================
+  */
+  parking          Json?
+  restrictions     Json?
+  furnishing       Json?
+  societyAmenities Json?
+
+  foodIncluded     Boolean?
+  petAllowed       Boolean?
+  nonVegAllowed    Boolean?
+  gatedCommunity   Boolean?
+  gateSecurity     Boolean?
+
+  noOfFloors       String?
+  noOfBalcony      String?
+
+  /*
+  =========================
+  PRICE
+  =========================
+  */
   rent           Float?
   maintenance    Float?
   deposit        Float?
   rentNegotiable Boolean?
 
-  // 📸 Media
-  images         String[]  @default([])
+  /*
+  =========================
+  MEDIA
+  =========================
+  */
+  images         String[] @default([])
   video          String?
 
-  // 📊 Status
-  currentStep    Int       @default(1)
-  isDraft        Boolean   @default(true)
+  /*
+  =========================
+  CONTACT
+  =========================
+  */
+  contactName    String?
+  mobileNo       String?
+  repliesWithin  String?
+  whatsapp       Boolean?
 
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  /*
+  =========================
+  STATUS
+  =========================
+  */
+  currentStep    Int      @default(1)
+  isDraft        Boolean  @default(true)
+
+  /*
+  =========================
+  TIMESTAMPS
+  =========================
+  */
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

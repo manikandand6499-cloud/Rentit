@@ -2,129 +2,196 @@ import {
   Controller,
   Post,
   Put,
-  Body,
-  Param,
   Get,
-  UseInterceptors,
-  UploadedFiles,
-  UploadedFile,
-} from "@nestjs/common";
-import { FilesInterceptor, FileInterceptor } from "@nestjs/platform-express";
-import type { Express } from "express";import { PropertyService } from "./property.service";
-import { CreateBasicDto } from "./dto/create-basic.dto";
-import { CreateDetailsDto } from "./dto/create-details.dto";
-import { CreateAmenitiesDto } from "./dto/create-amenities.dto";
-import { CreatePriceDto } from "./dto/create-price.dto";
+  Param,
+  Body,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { PropertyService } from './property.service';
+import { CreateBasicDto } from './dto/create-basic.dto';
+import { CreateDetailsDto } from './dto/create-details.dto';
+import { CreateAmenitiesDto } from './dto/create-amenities.dto';
+import { CreatePriceDto } from './dto/create-price.dto';
+import { CreateContactDto } from './dto/create-contact.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { s3 } from "../common/s3.config";
-import { v4 as uuid } from "uuid";
-
-@Controller("property")
+@Controller('property')
+@UseGuards(JwtAuthGuard)
 export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
 
-  // ✅ BASIC
-  @Post("basic")
-  createBasic(@Body() dto: CreateBasicDto) {
-    return this.propertyService.createBasic(dto);
+  /*
+  ==============================
+  STEP 1 - BASIC
+  ==============================
+  */
+  @Post('basic')
+  createBasic(
+    @Req() req,
+    @Body() dto: CreateBasicDto,
+  ) {
+    return this.propertyService.createBasic(
+      req.user.userId,
+      dto,
+    );
   }
 
-  // ✅ DETAILS
-  @Put("details/:id")
-  updateDetails(@Param("id") id: string, @Body() dto: CreateDetailsDto) {
-    return this.propertyService.updateDetails(Number(id), dto);
+  /*
+  ==============================
+  STEP 2 - DETAILS
+  ==============================
+  */
+  @Put(':id/details')
+  updateDetails(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() dto: CreateDetailsDto,
+  ) {
+    return this.propertyService.updateDetails(
+      Number(id),
+      req.user.userId,
+      dto,
+    );
   }
 
-  // ✅ AMENITIES
-@Put("amenities/:id")
-updateAmenities(
-  @Param("id") id: string,
-  @Body() dto: CreateAmenitiesDto
-) {
-  return this.propertyService.updateAmenities(Number(id), dto);
+  /*
+==============================
+GET ALL PROPERTIES
+==============================
+*/
+@Get("getallpropertys")
+getAllProperties() {
+  return this.propertyService.getAllProperties();
 }
 
-  // ✅ PRICE
-  @Put("price/:id")
-  updatePrice(@Param("id") id: string, @Body() dto: CreatePriceDto) {
-    return this.propertyService.updatePrice(Number(id), dto);
-  }
 
-  // ✅ VERIFY
-  @Put("verify/:id")
-  verifyProperty(@Param("id") id: string) {
-    return this.propertyService.verifyProperty(Number(id));
-  }
+@Get('my/list')
+getMyProperties(@Req() req) {
+  return this.propertyService.getMyProperties(req.user.userId);
+}
 
-  // ✅ GET PROPERTY
-  @Get(":id")
-  getProperty(@Param("id") id: string) {
-    return this.propertyService.getProperty(Number(id));
-  }
 
-  // ================================
-  // ✅ IMAGE UPLOAD TO AWS S3
-  // ================================
 
-  @Post("upload-images/:id")
-  @UseInterceptors(
-    FilesInterceptor("images", 6, {
-      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-    })
-  )
-  async uploadImages(
-    @Param("id") id: string,
-    @UploadedFiles() files: Express.Multer.File[]
+@Get('published/list')
+getPublishedProperties() {
+  return this.propertyService.getPublishedProperties();
+}
+
+
+  /*
+  ==============================
+  STEP 3 - AMENITIES
+  ==============================
+  */
+  @Put(':id/amenities')
+  updateAmenities(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() dto: CreateAmenitiesDto,
   ) {
-    const imageUrls: string[] = [];
-
-    for (const file of files) {
-      const key = `properties/images/${uuid()}-${file.originalname}`;
-
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME as string,
-          Key: key,
-          Body: file.buffer,
-          ContentType: file.mimetype,
-        })
-      );
-
-      const url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
-      imageUrls.push(url);
-    }
-
-    return this.propertyService.saveImages(Number(id), imageUrls);
-  }
-
-  // ================================
-  // ✅ VIDEO UPLOAD TO AWS S3
-  // ================================
-
-  @Post("upload-video/:id")
-  @UseInterceptors(
-    FileInterceptor("video", {
-      limits: { fileSize: 30 * 1024 * 1024 }, // 30MB
-    })
-  )
-  async uploadVideo(
-    @Param("id") id: string,
-    @UploadedFile() file: Express.Multer.File
-  ) {
-    const key = `properties/videos/${uuid()}-${file.originalname}`;
-
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME as string,
-        Key: key,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-      })
+    return this.propertyService.updateAmenities(
+      Number(id),
+      req.user.userId,
+      dto,
     );
+  }
 
-    const videoUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+  /*
+  ==============================
+  STEP 4 - PRICE
+  ==============================
+  */
+  @Put(':id/price')
+  updatePrice(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() dto: CreatePriceDto,
+  ) {
+    return this.propertyService.updatePrice(
+      Number(id),
+      req.user.userId,
+      dto,
+    );
+  }
 
-    return this.propertyService.saveVideo(Number(id), videoUrl);
+  /*
+  ==============================
+  STEP 5 - IMAGES
+  ==============================
+  */
+  @Put(':id/images')
+  saveImages(
+    @Param('id') id: string,
+    @Req() req,
+    @Body('images') images: string[],
+  ) {
+    return this.propertyService.saveImages(
+      Number(id),
+      req.user.userId,
+      images,
+    );
+  }
+
+  /*
+  ==============================
+  STEP 5 - VIDEO
+  ==============================
+  */
+  @Put(':id/video')
+  saveVideo(
+    @Param('id') id: string,
+    @Req() req,
+    @Body('video') video: string,
+  ) {
+    return this.propertyService.saveVideo(
+      Number(id),
+      req.user.userId,
+      video,
+    );
+  }
+
+  /*
+  ==============================
+  STEP 6 - CONTACT
+  ==============================
+  */
+  @Put(':id/contact')
+  updateContact(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() dto: CreateContactDto,
+  ) {
+    return this.propertyService.updateContact(
+      Number(id),
+      req.user.userId,
+      dto,
+    );
+  }
+
+  /*
+  ==============================
+  STEP 7 - VERIFY
+  ==============================
+  */
+  @Put(':id/verify')
+  verifyProperty(
+    @Param('id') id: string,
+    @Req() req,
+  ) {
+    return this.propertyService.verifyProperty(
+      Number(id),
+      req.user.userId,
+    );
+  }
+
+  /*
+  ==============================
+  GET PROPERTY
+  ==============================
+  */
+  @Get(':id')
+  getProperty(@Param('id') id: string) {
+    return this.propertyService.getProperty(Number(id));
   }
 }

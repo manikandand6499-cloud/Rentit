@@ -6,4 +6,5 @@ export class CreateBasicDto {
 
   @IsString()
   propertyType: string;
+  propertyType2: string;
 }

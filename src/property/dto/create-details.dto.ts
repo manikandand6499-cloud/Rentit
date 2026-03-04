@@ -1,54 +1,100 @@
-import { IsOptional, IsString, IsNumber, IsDateString } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsNumber,
+  IsDateString,
+  IsArray,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateDetailsDto {
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   propertyName?: string;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   category?: string;
 
-  @IsOptional() @IsNumber()
-  floor?: number;
-
-  @IsOptional() @IsNumber()
-  totalFloor?: number;
-
-  @IsOptional() @IsString()
-  description?: string;
-
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   ownershipType?: string;
 
-  @IsOptional() @IsNumber()
+  @IsOptional()
+  @IsString()
+  bhkType?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  floor?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  totalFloor?: number;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   builtUpArea?: number;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   propertyAge?: string;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   facing?: string;
 
-  @IsOptional() @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   noticePeriod?: number;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   occupancy?: string;
 
-  @IsOptional() @IsDateString()
+  @IsOptional()
+  @IsDateString()
   availableFrom?: string;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  preferredTenant?: string[];
+
+  @IsOptional()
+  @IsString()
+  rulesAndRegulation?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  roomType?: string[];
+
+  @IsOptional()
+  @IsString()
   location?: string;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   street?: string;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   locality?: string;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   landmark?: string;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   pincode?: string;
 }

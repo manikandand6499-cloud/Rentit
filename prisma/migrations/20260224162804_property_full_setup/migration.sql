@@ -4,6 +4,7 @@ CREATE TABLE "Property" (
     "userId" INTEGER,
     "city" TEXT NOT NULL,
     "propertyType" TEXT NOT NULL,
+    "propertyType2" TEXT NOT NULL,
     "propertyName" TEXT,
     "category" TEXT,
     "floor" INTEGER,
