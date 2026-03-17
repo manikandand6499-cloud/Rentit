@@ -9,10 +9,11 @@ import { CreateDetailsDto } from './dto/create-details.dto';
 import { CreateAmenitiesDto } from './dto/create-amenities.dto';
 import { CreatePriceDto } from './dto/create-price.dto';
 import { CreateContactDto } from './dto/create-contact.dto';
+import { UpdateLocationDto } from './dto/location.dto';
 
 @Injectable()
 export class PropertyService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   /*
   ============================================================
@@ -57,31 +58,67 @@ export class PropertyService {
   }
 
 
-/*
-============================================================
-GET ALL PROPERTIES
-============================================================
-*/
-async getAllProperties() {
-  return this.prisma.property.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-}
+  /*
+  ============================================================
+  GET ALL PROPERTIES
+  ============================================================
+  */
+  async getAllProperties(lat?: number, lng?: number, city?: string) {
+   const where: any = {
+  isDeleted: false, // ✅ MUST
+}; // ← removed isDraft filter for now
+
+    if (city) {
+      where.city = { contains: city, mode: 'insensitive' };
+    }
+
+    const properties = await this.prisma.property.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!lat || !lng) return properties;
+
+    const withCoords = properties
+      .filter(p => p.latitude && p.longitude)
+      .sort((a, b) => {
+        const distA = this.haversine(lat, lng, a.latitude!, a.longitude!);
+        const distB = this.haversine(lat, lng, b.latitude!, b.longitude!);
+        return distA - distB;
+      });
+
+    const withoutCoords = properties.filter(p => !p.latitude || !p.longitude);
+
+    return [...withCoords, ...withoutCoords];
+  }
+
+  
+  private haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      
+      Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
 
 
+  
 async getMyProperties(userId: number) {
   return this.prisma.property.findMany({
     where: {
       userId,
+      // include deleted also (dashboard needs it)
     },
     orderBy: {
       createdAt: 'desc',
     },
   });
 }
-
 
 
 async getPublishedProperties() {
@@ -89,6 +126,7 @@ async getPublishedProperties() {
     where: {
       isDraft: false,
       currentStep: 7,
+      isDeleted: false, // ✅ MUST
     },
     orderBy: {
       createdAt: 'desc',
@@ -269,4 +307,56 @@ async getPublishedProperties() {
       );
     }
   }
+
+
+
+
+  async updateLocation(id: number, userId: number, data: UpdateLocationDto) {
+    await this.checkPropertyOwner(id, userId);
+
+    return this.prisma.property.update({
+      where: { id },
+      data: {
+        latitude: data.latitude,
+        longitude: data.longitude,
+      },
+    });
+  }
+
+async deleteProperty(id: number, userId: number) {
+  const property = await this.prisma.property.findUnique({ where: { id } });
+
+  if (!property) throw new NotFoundException('Property not found');
+
+  if (property.userId !== userId) {
+    throw new UnauthorizedException('Not allowed');
+  }
+
+  if (property.isDeleted) {
+    throw new Error('Already deleted'); // optional
+  }
+
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      isDeleted: true,
+      deletedAt: new Date(),
+    },
+  });
 }
+
+async reactivateProperty(id: number, userId: number) {
+  await this.checkPropertyOwner(id, userId);
+
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      isDeleted: false,
+      deletedAt: null,
+    },
+  });
+}
+
+}
+
+

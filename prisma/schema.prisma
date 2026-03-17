@@ -8,11 +8,15 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  mobile    String    @unique
-  createdAt DateTime  @default(now())
+  id        Int      @id @default(autoincrement())
+  mobile    String   @unique
+  name      String?
+  email     String?
+  isProfileComplete Boolean @default(false)
+  createdAt DateTime @default(now())
 
   properties Property[]
+  likes      Like[]
 }
 
 model Otp {
@@ -23,26 +27,51 @@ model Otp {
   createdAt DateTime @default(now())
 }
 
+model Like {
+  id Int @id @default(autoincrement())
+
+  userId     Int
+  propertyId Int
+
+  user     User     @relation(fields: [userId], references: [id])
+  property Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, propertyId])
+}
+
 model Property {
   id Int @id @default(autoincrement())
 
   // ================= USER =================
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  userId    Int
+  user      User   @relation(fields: [userId], references: [id])
+  latitude  Float?
+  longitude Float?
+
+  // =============Like ===========
+
+  likes Like[]
+
+  //========== delete=============
+
+  isDeleted Boolean @default(false)
+  deletedAt DateTime?
 
   // ================= BASIC INFO =================
   city          String
   propertyType  String
   propertyType2 String @default("")
 
-  propertyName  String?
-  category      String?
-  bhkType       String?
+  propertyName String?
+  category     String?
+  bhkType      String?
 
   // ================= PROPERTY DETAILS =================
-  floor         Int?
-  totalFloor    Int?
-  description   String?
+  floor       Int?
+  totalFloor  Int?
+  description String?
 
   builtUpArea   Float?
   propertyAge   String?
@@ -54,7 +83,7 @@ model Property {
   // ================= SHARING =================
   sharingType     Json?
   preferredTenant Json?
-  ownershipType   Json?   // ✅ ONLY JSON VERSION
+  ownershipType   Json? // ✅ ONLY JSON VERSION
 
   // ================= RULES =================
   rulesAndRegulation String?
