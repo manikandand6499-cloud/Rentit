@@ -1,23 +1,24 @@
+// create-details.dto.ts
 import {
   IsOptional,
   IsString,
   IsNumber,
   IsDateString,
-  IsArray
+  IsArray,
+  IsBoolean,
+  IsObject,
 } from "class-validator";
 import { Type } from "class-transformer";
 
 export class CreateDetailsDto {
 
-  /*
-  ==============================
-  BASIC PROPERTY INFO
-  ==============================
-  */
-
   @IsOptional()
   @IsString()
   propertyName?: string;
+
+    @IsOptional()
+  @IsString()
+  buildingType?: string;
 
   @IsOptional()
   @IsString()
@@ -26,18 +27,11 @@ export class CreateDetailsDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  ownershipType?: string[];   // ✅ FIXED
+  ownershipType?: string[];
 
   @IsOptional()
   @IsString()
   bhkType?: string;
-
-
-  /*
-  ==============================
-  FLOOR DETAILS
-  ==============================
-  */
 
   @IsOptional()
   @Type(() => Number)
@@ -48,13 +42,6 @@ export class CreateDetailsDto {
   @Type(() => Number)
   @IsNumber()
   totalFloor?: number;
-
-
-  /*
-  ==============================
-  PROPERTY DESCRIPTION
-  ==============================
-  */
 
   @IsOptional()
   @IsString()
@@ -73,13 +60,6 @@ export class CreateDetailsDto {
   @IsString()
   facing?: string;
 
-
-  /*
-  ==============================
-  TENANT DETAILS
-  ==============================
-  */
-
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
@@ -92,36 +72,19 @@ export class CreateDetailsDto {
   @IsOptional()
   @IsDateString()
   availableFrom?: string;
-
-
-  /*
-  ==============================
-  PREFERRED TENANT
-  ==============================
-  */
+ 
+    @IsOptional()
+  @IsObject()
+  otherFeatures?: any;
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   preferredTenant?: string[];
 
-
-  /*
-  ==============================
-  RULES
-  ==============================
-  */
-
   @IsOptional()
   @IsString()
   rulesAndRegulation?: string;
-
-
-  /*
-  ==============================
-  ROOM TYPE
-  ==============================
-  */
 
   @IsOptional()
   roomType?: {
@@ -129,13 +92,6 @@ export class CreateDetailsDto {
     rent?: number;
     deposit?: number;
   }[];
-
-
-  /*
-  ==============================
-  LOCATION DETAILS
-  ==============================
-  */
 
   @IsOptional()
   @IsString()
@@ -156,4 +112,42 @@ export class CreateDetailsDto {
   @IsOptional()
   @IsString()
   pincode?: string;
+ 
+
+
+  // ✅ IMPORTANT FIELDS
+  @IsOptional()
+  @IsBoolean()
+  foodIncluded?: boolean;
+
+  @IsOptional()
+  foodType?: any;
+
+  @IsOptional()
+  @IsString()
+  gateClosingTime?: string;
+
+  @IsOptional()
+  furnishing?: any;
+
+  @IsOptional()
+  @IsArray()
+  placeisavailablefor?: string[];
+
+@IsOptional()
+@IsString()
+propertyType2?: string;
+
+@IsOptional()
+@IsString()
+city?: string;
+
+@IsOptional()
+@IsNumber()
+latitude?: number;
+
+@IsOptional()
+@IsNumber()
+longitude?: number;
+  rentType: any;
 }

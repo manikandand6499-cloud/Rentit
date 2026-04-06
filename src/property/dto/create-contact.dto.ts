@@ -16,4 +16,40 @@ export class CreateContactDto {
   @IsOptional()
   @IsBoolean()
   whatsapp?: boolean;
+
+   @IsOptional()
+  laundry?: boolean;
+
+  @IsOptional()
+  roomCleaning?: boolean;
+
+  @IsOptional()
+  warden?: boolean;
+
+  @IsOptional()
+  wifi?: boolean;
+
+  @IsOptional()
+  commonTV?: boolean;
+
+  @IsOptional()
+  lift?: any;
+
+  @IsOptional()
+  powerBackup?: boolean;
+
+  @IsOptional()
+  mess?: boolean;
+
+  @IsOptional()
+  refrigerator?: boolean;
+
+  @IsOptional()
+  cookingAllowed?: boolean;
+
+  @IsOptional()
+  parkingType?: any;
+
+  @IsOptional()
+  setDirection?: string;
 }

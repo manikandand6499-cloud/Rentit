@@ -1,4 +1,6 @@
-import { IsOptional, IsBoolean, IsString } from "class-validator";
+// create-amenities.dto.ts
+
+import { IsObject, IsOptional, IsBoolean, IsString } from "class-validator";
 
 export class CreateAmenitiesDto {
 
@@ -9,10 +11,17 @@ export class CreateAmenitiesDto {
   restrictions?: any;
 
   @IsOptional()
+  @IsObject()
   furnishing?: any;
 
   @IsOptional()
   societyAmenities?: any;
+
+  @IsOptional()
+  roomAmenities?: any;
+
+  @IsOptional()
+  foodType?: any;
 
   @IsOptional()
   @IsBoolean()
@@ -35,10 +44,35 @@ export class CreateAmenitiesDto {
   gateSecurity?: boolean;
 
   @IsOptional()
-  @IsString()
   noOfFloors?: string;
 
   @IsOptional()
-  @IsString()
   noOfBalcony?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  laundry?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  roomCleaning?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  warden?: boolean;
+
+  // 🔥 FIXED FIELDS
+  @IsOptional()
+  isBusinessRunning?: any;
+
+  @IsOptional()
+  propertyCondition?: any;
+
+  @IsOptional()
+  @IsBoolean()
+  unitsPropertiesavailaible?: boolean;
+
+  @IsOptional()
+  @IsString()
+  directions?: string;
 }

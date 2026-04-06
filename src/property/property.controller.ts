@@ -1,3 +1,4 @@
+// property.controller.ts
 import {
   Controller,
   Post,
@@ -10,6 +11,7 @@ import {
   UploadedFiles,
   UploadedFile,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 
 import { FilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
@@ -24,15 +26,41 @@ import { CreateContactDto } from './dto/create-contact.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 import { uploadToS3 } from '../common/s3.upload';
+import { UpdateLocationDto } from './dto/location.dto';
+import { UpdateAvailabilityDto } from './dto/availability.dto';
+import { CreateAdditionalDto } from './dto/create-additional.dto';
+import { CreateRentDto } from './dto/create-rent.dto';
+import { CreateAdditionalDetailsDto } from './dto/create-residential-additional-details.dto';
 
 @Controller('property')
 @UseGuards(JwtAuthGuard)
 export class PropertyController {
+  userService: any;
 
   constructor(
     private readonly propertyService: PropertyService,
-  ) {}
+  ) { }
 
+
+  /*
+==============================
+STEP 1 - loactions
+==============================
+*/
+
+  @UseGuards(JwtAuthGuard)
+  @Put("location/:id")
+  updatePropertyLocation(
+    @Param("id") id: string,
+    @Req() req,
+    @Body() dto: UpdateLocationDto,
+  ) {
+    return this.propertyService.updateLocation(
+      Number(id),
+      req.user.id,
+      dto,
+    );
+  }
   /*
   ==============================
   STEP 1 - BASIC
@@ -79,12 +107,19 @@ export class PropertyController {
   ==============================
   */
 
-  @Get('getallpropertys')
-  getAllProperties() {
+@Get('getallpropertys')
+getAllProperties(
+  @Query('lat') lat?: string,
+  @Query('lng') lng?: string,
+  @Query('city') city?: string,
+) {
+  return this.propertyService.getAllProperties(
+    lat ? parseFloat(lat) : undefined,
+    lng ? parseFloat(lng) : undefined,
+    city,
+  );
+}
 
-    return this.propertyService.getAllProperties();
-
-  }
 
   @Get('my/list')
   getMyProperties(@Req() req) {
@@ -151,29 +186,24 @@ export class PropertyController {
   */
 
 @Post(':id/upload-images')
-@UseInterceptors(FilesInterceptor('files', 6))
+@UseInterceptors(FilesInterceptor('files'))
 async uploadImages(
-  @Param('id') id: string,
-  @Req() req,
+  @Param('id') id: number,
   @UploadedFiles() files: Express.Multer.File[],
+  @Body('existingImages') existingImages: string,
+  @Req() req,
 ) {
+  const oldImages = existingImages ? JSON.parse(existingImages) : [];
 
-  const urls: string[] = [];
+  const newUrls = files.map(file => file.path); // or cloud url
 
-  for (const file of files) {
-
-    const url = await uploadToS3(file);
-
-    urls.push(url);
-
-  }
+  const finalImages = [...oldImages, ...newUrls];
 
   return this.propertyService.saveImages(
     Number(id),
     req.user.userId,
-    urls,
+    finalImages,
   );
-
 }
 
   /*
@@ -182,23 +212,23 @@ async uploadImages(
   ==============================
   */
 
-@Post(':id/upload-video')
-@UseInterceptors(FileInterceptor('file'))
-async uploadVideo(
-  @Param('id') id: string,
-  @Req() req,
-  @UploadedFile() file: Express.Multer.File,
-) {
+  @Post(':id/upload-video')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadVideo(
+    @Param('id') id: string,
+    @Req() req,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
 
-  const url = await uploadToS3(file);
+    const url = await uploadToS3(file);
 
-  return this.propertyService.saveVideo(
-    Number(id),
-    req.user.userId,
-    url,
-  );
+    return this.propertyService.saveVideo(
+      Number(id),
+      req.user.userId,
+      url,
+    );
 
-}
+  }
 
   /*
   ==============================
@@ -254,5 +284,78 @@ async uploadVideo(
     );
 
   }
+
+@Put(':id/delete')
+deleteProperty(@Param('id') id: string, @Req() req) {
+  return this.propertyService.deleteProperty(
+    Number(id),
+    req.user.userId,
+  );
+}
+
+@Put(':id/reactivate')
+reactivateProperty(@Param('id') id: string, @Req() req) {
+  return this.propertyService.reactivateProperty(
+    Number(id),
+    req.user.userId,
+  );
+}
+
+@Put(':id/availability')
+updateAvailability(
+  @Param('id') id: string,
+  @Req() req,
+  @Body() dto: UpdateAvailabilityDto,
+) {
+  return this.propertyService.updateAvailability(
+    Number(id),
+    req.user.userId,
+    dto,
+  );
+}
+
+@Put(':id/additional')
+updateAdditional(
+  @Param('id') id: string,
+  @Req() req,
+  @Body() data: CreateAdditionalDto
+) {
+  return this.propertyService.updateAdditional(
+    +id,
+    req.user.userId,
+    data
+  );
+}
+
+@Put(':id/rent')
+updateRent(
+  @Param('id') id: string,
+  @Req() req,
+  @Body() data: CreateRentDto
+) {
+  return this.propertyService.updateRent(
+    +id,
+    req.user.userId,
+    data
+  );
+}
+
+@Put(':id/additional-residential-details')
+updateAdditionalDetails(
+  @Param('id') id: string,
+  @Req() req,
+  @Body() data: CreateAdditionalDetailsDto
+) {
+  return this.propertyService.updateAdditionalDetails(
+    +id,
+    req.user.userId,
+    data
+  );
+}
+
+@Get('search-locations')
+searchLocations(@Query('q') q: string) {
+  return this.propertyService.searchLocations(q);
+}
 
 }
