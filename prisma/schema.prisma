@@ -27,6 +27,7 @@ model Subscription {
   planDuration String
   amount       Int
   paymentId    String
+  propertyType String
   startDate    DateTime
   expiryDate   DateTime
   isActive     Boolean  @default(true)

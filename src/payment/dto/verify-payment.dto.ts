@@ -1,5 +1,3 @@
-import { IsNumber, IsString } from "class-validator";
-
 export class VerifyPaymentDto {
   @IsString()
   razorpay_order_id: string;
@@ -10,12 +8,13 @@ export class VerifyPaymentDto {
   @IsString()
   razorpay_signature: string;
 
-  @IsNumber()
-  userId: number;
-
   @IsString()
   planType: string;
 
-  @IsNumber()
-  amount: number;
+@IsNumber()
+@Type(() => Number)
+amount: number;
+
+  @IsString()
+  propertyType: string;
 }

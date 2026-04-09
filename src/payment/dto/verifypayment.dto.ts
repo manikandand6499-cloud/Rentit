@@ -1,3 +1,6 @@
+// verifypayment.dto.ts
 export class CreateOrderDto {
-  amount: number;
+  @IsNumber()
+@Type(() => Number)
+amount: number;
 }
