@@ -112,11 +112,15 @@ getAllProperties(
   @Query('lat') lat?: string,
   @Query('lng') lng?: string,
   @Query('city') city?: string,
+  @Query('locality') locality?: string,
+   @Query('propertyType') propertyType?: string,
 ) {
   return this.propertyService.getAllProperties(
     lat ? parseFloat(lat) : undefined,
     lng ? parseFloat(lng) : undefined,
     city,
+    locality,
+     propertyType
   );
 }
 
@@ -184,7 +188,6 @@ getAllProperties(
   STEP 5 - UPLOAD IMAGES
   ==============================
   */
-
 @Post(':id/upload-images')
 @UseInterceptors(FilesInterceptor('files'))
 async uploadImages(
@@ -195,7 +198,13 @@ async uploadImages(
 ) {
   const oldImages = existingImages ? JSON.parse(existingImages) : [];
 
-  const newUrls = files.map(file => file.path); // or cloud url
+  const newUrls: string[] = [];
+
+  for (const file of files) {
+    const url = await uploadToS3(file); // ✅ S3 upload
+    console.log("Uploaded URL:", url); // 🔥 DEBUG
+    newUrls.push(url);
+  }
 
   const finalImages = [...oldImages, ...newUrls];
 
@@ -205,7 +214,6 @@ async uploadImages(
     finalImages,
   );
 }
-
   /*
   ==============================
   STEP 5 - UPLOAD VIDEO

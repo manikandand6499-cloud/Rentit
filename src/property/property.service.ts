@@ -18,6 +18,12 @@ import { CreateAdditionalDetailsDto } from './dto/create-residential-additional-
 
 @Injectable()
 export class PropertyService {
+  uploadVideoToS3(id: number, userId: any, file: Express.Multer.File) {
+    throw new Error('Method not implemented.');
+  }
+  uploadImagesToS3(id: number, userId: any, files: Express.Multer.File[]) {
+    throw new Error('Method not implemented.');
+  }
 
   constructor(private prisma: PrismaService) { }
 
@@ -124,7 +130,7 @@ export class PropertyService {
   GET ALL PROPERTIES
   ============================================================
   */
-  async getAllProperties(lat?: number, lng?: number, city?: string) {
+ async getAllProperties(lat?: number, lng?: number, city?: string, locality?: string | undefined, propertyType?: string | undefined) {
     const where: any = {
       isDeleted: false, // ✅ MUST
     }; // ← removed isDraft filter for now
@@ -133,18 +139,21 @@ export class PropertyService {
       where.city = { contains: city, };
     }
 
-const properties = await this.prisma.property.findMany({
-  where,
-  select: {
-    id: true,
-    city: true,
-    rent: true,
-    createdAt: true,
-    latitude: true,     // ✅ ADD THIS
-    longitude: true,    // ✅ ADD THIS
-  },
-  orderBy: { createdAt: 'desc' },
-});
+    const properties = await this.prisma.property.findMany({
+      where,
+      select: {
+        id: true,
+        city: true,
+        rent: true,
+        locality: true,
+        createdAt: true,
+        latitude: true,     // ✅ ADD THIS
+        longitude: true,
+        propertyType: true,   // ✅ ADD THIS
+        images: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
     if (!lat || !lng) return properties;
 
@@ -496,25 +505,27 @@ const properties = await this.prisma.property.findMany({
     });
   }
 
-  async updateAvailability(
-    id: number,
-    userId: number,
-    data: UpdateAvailabilityDto,
-  ) {
-    await this.checkPropertyOwner(id, userId);
+async updateAvailability(
+  id: number,
+  userId: number,
+  data: UpdateAvailabilityDto,
+) {
+  await this.checkPropertyOwner(id, userId);
 
-    return this.prisma.property.update({
-      where: { id },
-      data: {
-        availabilityDay: data.availabilityDay,
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      availabilityDay: data.availabilityDay,
 
-        startTime: data.startTime ?? null,
-        endTime: data.endTime ?? null,
+      startTime: data.startTime ?? null,
+      endTime: data.endTime ?? null,
 
-        currentStep: 3, // ✅ FIXED
-      },
-    });
-  }
+      availableAllDay: data.availableAllDay, // ✅ ADD THIS LINE
+
+      currentStep: 3,
+    },
+  });
+}
 
   async updateAdditional(
     id: number,
@@ -648,6 +659,9 @@ const properties = await this.prisma.property.findMany({
       },
     });
   }
+
+
+  
 
   async searchLocations(query: string) {
     if (!query) return [];

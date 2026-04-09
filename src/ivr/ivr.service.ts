@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import Twilio from 'twilio';
-import dayjs from 'dayjs';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -14,7 +13,6 @@ export class IvrService {
     );
   }
 
-  // 🔥 CALL USER
   async callUser(visitId: number) {
     const visit = await this.prisma.visit.findUnique({
       where: { id: visitId },
@@ -23,12 +21,28 @@ export class IvrService {
 
     if (!visit) return;
 
-    await this.client.calls.create({
-      to: visit.user.mobile,
-      from: process.env.TWILIO_PHONE,
-      url: `${process.env.BASE_URL}/ivr/start?bookingId=${visit.id}`,
-    });
+    let mobile = visit.user.mobile;
 
-    console.log("📞 CALL TRIGGERED:", visit.user.mobile);
+    if (!mobile.startsWith("+91")) {
+      mobile = "+91" + mobile;
+    }
+
+    const url = `${process.env.BASE_URL}/ivr/start?bookingId=${visit.id}`;
+
+    console.log("📞 Calling:", mobile);
+    console.log("🌍 URL:", url);
+    console.log("☎ FROM:", process.env.TWILIO_PHONE_NUMBER);
+
+    try {
+      const call = await this.client.calls.create({
+        to: mobile,
+        from: process.env.TWILIO_PHONE_NUMBER, // ✅ FIXED
+        url,
+      });
+
+      console.log("✅ CALL SID:", call.sid);
+    } catch (err) {
+      console.error("❌ TWILIO ERROR:", err instanceof Error ? err.message : String(err));
+    }
   }
 }

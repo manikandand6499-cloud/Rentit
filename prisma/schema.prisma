@@ -54,18 +54,19 @@ model Like {
 }
 
 model Visit {
-  id         Int @id @default(autoincrement())
-  userId     Int
+  id        Int      @id @default(autoincrement())
+  date      String
+  time      String
+  status    String   @default("pending")
+  language  String   @default("en")
+
+  userId    Int
   propertyId Int
 
-  date String
-  time String
+  user      User     @relation(fields: [userId], references: [id])
+  property  Property @relation(fields: [propertyId], references: [id])
 
-  status    String   @default("pending")
   createdAt DateTime @default(now())
-
-  user     User     @relation(fields: [userId], references: [id])
-  property Property @relation(fields: [propertyId], references: [id])
 }
 
 model Property {
