@@ -132,6 +132,11 @@ model Property {
   whatsapp        Boolean?
   whatsappupdates Boolean?
 
+  preferredTenant     Json?
+  preferredGuests     Json? // ✅ ADD THIS
+  restrictions        Json?
+  propertyDescription String?
+
   // ⚙️ SYSTEM
   currentStep Int      @default(1)
   isDraft     Boolean  @default(true)
