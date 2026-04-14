@@ -124,7 +124,7 @@ export class PropertyService {
   GET ALL PROPERTIES
   ============================================================
   */
-  async getAllProperties(lat?: number, lng?: number, city?: string) {
+  async getAllProperties(lat?: number, lng?: number, city?: string, locality?: string | undefined, propertyType?: string | undefined) {
     const where: any = {
       isDeleted: false, // ✅ MUST
     }; // ← removed isDraft filter for now
@@ -133,18 +133,20 @@ export class PropertyService {
       where.city = { contains: city, };
     }
 
-const properties = await this.prisma.property.findMany({
-  where,
-  select: {
-    id: true,
-    city: true,
-    rent: true,
-    createdAt: true,
-    latitude: true,     // ✅ ADD THIS
-    longitude: true,    // ✅ ADD THIS
-  },
-  orderBy: { createdAt: 'desc' },
-});
+    const properties = await this.prisma.property.findMany({
+      where,
+      select: {
+        id: true,
+        city: true,
+        rent: true,
+        locality: true,
+        createdAt: true,
+        latitude: true,     // ✅ ADD THIS
+        longitude: true,
+        propertyType: true   // ✅ ADD THIS
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
     if (!lat || !lng) return properties;
 

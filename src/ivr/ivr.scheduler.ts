@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { PrismaService } from '../../prisma/prisma.service';
 import { IvrService } from './ivr.service';
+
+dayjs.extend(customParseFormat);
 
 @Injectable()
 export class IvrScheduler {
@@ -11,15 +14,12 @@ export class IvrScheduler {
     private ivrService: IvrService
   ) {}
 
-  // 🔥 every minute check pannum
   @Cron('* * * * *')
   async handleCron() {
     console.log("⏱ Checking visits...");
 
     const visits = await this.prisma.visit.findMany({
-      where: {
-        status: 'pending',
-      },
+      where: { status: 'pending' },
       include: { user: true },
     });
 
@@ -33,9 +33,18 @@ export class IvrScheduler {
 
       const diff = visitDateTime.diff(now, 'minute');
 
-      // 🔥 EXACT 60 mins before
-      if (diff === 60) {
+      console.log(`📊 Visit ${visit.id} | Diff: ${diff}`);
+
+      // ✅ CALL BEFORE 2 MINUTES
+      if (diff <= 2 && diff >= 0) {
+        console.log("🚀 Calling user...");
+
         await this.ivrService.callUser(visit.id);
+
+        await this.prisma.visit.update({
+          where: { id: visit.id },
+          data: { status: 'calling' },
+        });
       }
     }
   }

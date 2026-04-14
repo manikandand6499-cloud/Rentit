@@ -112,11 +112,15 @@ getAllProperties(
   @Query('lat') lat?: string,
   @Query('lng') lng?: string,
   @Query('city') city?: string,
+  @Query('locality') locality?: string,
+   @Query('propertyType') propertyType?: string,
 ) {
   return this.propertyService.getAllProperties(
     lat ? parseFloat(lat) : undefined,
     lng ? parseFloat(lng) : undefined,
     city,
+    locality,
+     propertyType
   );
 }
 
