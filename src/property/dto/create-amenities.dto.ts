@@ -1,4 +1,4 @@
-import { IsOptional, IsBoolean } from "class-validator";
+import { IsOptional, IsBoolean, IsObject } from "class-validator";
 
 export class CreateAmenitiesDto {
 
@@ -8,37 +8,38 @@ export class CreateAmenitiesDto {
   foodIncluded?: boolean;
 
   @IsOptional()
-  foodType?: any;
+  @IsObject()
+  foodType?: Record<string, any>;
 
-  // 🏠 PG AMENITIES
+  // 🏠 ALL AMENITIES (BEST APPROACH)
   @IsOptional()
-  pgAmenities?: any;
-
-  // 📶 BASIC FACILITIES
-  @IsOptional()
-  @IsBoolean()
-  wifi?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  powerBackup?: boolean;
-
-  // 🧺 SERVICES
-  @IsOptional()
-  @IsBoolean()
-  laundry?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  roomCleaning?: boolean;
-
-  // 👨‍💼 MANAGEMENT
-  @IsOptional()
-  @IsBoolean()
-  warden?: boolean;
+  @IsObject()
+  pgAmenities?: {
+    laundry?: boolean;
+    roomCleaning?: boolean;
+    wifi?: boolean;
+    commonTV?: boolean;
+    lift?: boolean;
+    powerBackup?: boolean;
+    refrigerator?: boolean;
+    mess?: boolean;
+  };
 
   // 🏢 RULES
   @IsOptional()
   @IsBoolean()
   nonVegAllowed?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  drinking?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  smoking?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  guardiansStay?: boolean;
+
 }

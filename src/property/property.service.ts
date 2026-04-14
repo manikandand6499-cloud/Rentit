@@ -102,21 +102,23 @@ export class PropertyService {
   async updateAmenities(id: number, userId: number, data: CreateAmenitiesDto) {
     await this.checkPropertyOwner(id, userId);
 
-    return this.prisma.property.update({
-      where: { id },
-      data: {
-        pgAmenities: data.pgAmenities ?? undefined,
-        wifi: data.wifi ?? undefined,
-        powerBackup: data.powerBackup ?? undefined,
-        laundry: data.laundry ?? undefined,
-        roomCleaning: data.roomCleaning ?? undefined,
+   return this.prisma.property.update({
+  where: { id },
+  data: {
+    foodIncluded: data.foodIncluded ?? undefined,
+    foodType: data.foodType ?? undefined,
 
-        foodIncluded: data.foodIncluded ?? undefined,
-        nonVegAllowed: data.nonVegAllowed ?? undefined,
+    /// ✅ STORE EVERYTHING HERE
+    pgAmenities: data.pgAmenities ?? undefined,
 
-        currentStep: 3,
-      },
-    });
+    nonVegAllowed: data.nonVegAllowed ?? undefined,
+    drinking: data.drinking ?? undefined,
+    smoking: data.smoking ?? undefined,
+    guardiansStay: data.guardiansStay ?? undefined,
+
+    currentStep: 4,
+  },
+});
   }
 
   /*
