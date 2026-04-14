@@ -124,68 +124,68 @@ export class PropertyService {
       },
     });
   }
+/*
+============================================================
+GET ALL PROPERTIES
+============================================================
+*/
+async getAllProperties(
+  lat?: number,
+  lng?: number,
+  city?: string,
+  locality?: string,
+  propertyType?: string,
+) {
+  const where: any = {
+    isDeleted: false,
+  };
 
-  /*
-  ============================================================
-  GET ALL PROPERTIES
-  ============================================================
-  */
-<<<<<<< HEAD
-  async getAllProperties(lat?: number, lng?: number, city?: string, locality?: string | undefined, propertyType?: string | undefined) {
-=======
-<<<<<<< HEAD
- async getAllProperties(lat?: number, lng?: number, city?: string, locality?: string | undefined, propertyType?: string | undefined) {
-=======
-  async getAllProperties(lat?: number, lng?: number, city?: string, locality?: string | undefined, propertyType?: string | undefined) {
->>>>>>> 95d796d (rentit v1 changes)
->>>>>>> 7a40c32
-    const where: any = {
-      isDeleted: false, // ✅ MUST
-    }; // ← removed isDraft filter for now
-
-    if (city) {
-      where.city = { contains: city, };
-    }
-
-    const properties = await this.prisma.property.findMany({
-      where,
-      select: {
-        id: true,
-        city: true,
-        rent: true,
-        locality: true,
-        createdAt: true,
-        latitude: true,     // ✅ ADD THIS
-        longitude: true,
-<<<<<<< HEAD
-        propertyType: true   // ✅ ADD THIS
-=======
-<<<<<<< HEAD
-        propertyType: true,   // ✅ ADD THIS
-        images: true,
-=======
-        propertyType: true   // ✅ ADD THIS
->>>>>>> 95d796d (rentit v1 changes)
->>>>>>> 7a40c32
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (!lat || !lng) return properties;
-
-    const withCoords = properties
-      .filter(p => p.latitude && p.longitude)
-      .sort((a, b) => {
-        const distA = this.haversine(lat, lng, a.latitude!, a.longitude!);
-        const distB = this.haversine(lat, lng, b.latitude!, b.longitude!);
-        return distA - distB;
-      });
-
-    const withoutCoords = properties.filter(p => !p.latitude || !p.longitude);
-
-    return [...withCoords, ...withoutCoords];
+  if (city) {
+    where.city = { contains: city };
   }
 
+  if (locality) {
+    where.locality = { contains: locality };
+  }
+
+  if (propertyType) {
+    where.propertyType = propertyType;
+  }
+
+  const properties = await this.prisma.property.findMany({
+    where,
+    select: {
+      id: true,
+      city: true,
+      rent: true,
+      locality: true,
+      createdAt: true,
+      latitude: true,
+      longitude: true,
+      propertyType: true,
+      images: true, // ✅ kept best version
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  // 👉 If no location → return directly
+  if (!lat || !lng) return properties;
+
+  // 👉 Sort by nearest location
+  const withCoords = properties
+    .filter(p => p.latitude && p.longitude)
+    .sort((a, b) => {
+      const distA = this.haversine(lat, lng, a.latitude!, a.longitude!);
+      const distB = this.haversine(lat, lng, b.latitude!, b.longitude!);
+      return distA - distB;
+    });
+
+  const withoutCoords = properties.filter(
+    p => !p.latitude || !p.longitude,
+  );
+
+  return [...withCoords, ...withoutCoords];
+}
 
   private haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
     const R = 6371;
