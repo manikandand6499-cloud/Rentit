@@ -110,8 +110,6 @@ model Property {
 
   parking Boolean?
 
-  // 🏢 RULES
-  restrictions Json?
 
   // ⏰ AVAILABILITY
   availableFrom   DateTime?
