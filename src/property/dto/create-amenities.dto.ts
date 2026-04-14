@@ -1,4 +1,4 @@
-import { IsOptional, IsBoolean, IsObject } from "class-validator";
+import { IsOptional, IsBoolean, IsObject, IsString } from "class-validator";
 
 export class CreateAmenitiesDto {
 
@@ -7,16 +7,17 @@ export class CreateAmenitiesDto {
   @IsBoolean()
   foodIncluded?: boolean;
 
-
- @IsOptional()
+  // 🚗 PARKING
+  @IsOptional()
   @IsBoolean()
   parking?: boolean;
-  
+
+  // 🍱 FOOD TYPE (JSON)
   @IsOptional()
   @IsObject()
   foodType?: Record<string, any>;
 
-  // 🏠 ALL AMENITIES (BEST APPROACH)
+  // 🏠 ALL AMENITIES
   @IsOptional()
   @IsObject()
   pgAmenities?: {
@@ -30,38 +31,19 @@ export class CreateAmenitiesDto {
     mess?: boolean;
   };
 
-
-
-    @IsOptional()
+  // 🚫 RULES (JSON)
+  @IsOptional()
   @IsObject()
   restrictions?: {
-    Smoking?: boolean;
-    Alcohol?: boolean;
-    LoudMusic?: boolean;
-    NonVeg?: boolean;
-    GirlsEntry?: boolean;
+    smoking?: boolean;
+    drinking?: boolean;
+    loudMusic?: boolean;
+    nonVeg?: boolean;
+    guestsAllowed?: boolean;
   };
-  
 
-  // 🏢 RULES
+  // 📝 DESCRIPTION
   @IsOptional()
-  @IsBoolean()
-  nonVegAllowed?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  drinking?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  smoking?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  guardiansStay?: boolean;
-  
-  @IsOptional()
-  @IsObject()
+  @IsString()
   propertyDescription?: string;
-
 }

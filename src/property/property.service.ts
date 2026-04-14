@@ -13,7 +13,6 @@ import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateLocationDto } from './dto/location.dto';
 import { UpdateAvailabilityDto } from './dto/availability.dto';
 import { CreateAdditionalDto } from './dto/create-additional.dto';
-import { CreateRentDto } from './dto/create-rent.dto';
 import { CreateAdditionalDetailsDto } from './dto/create-residential-additional-details.dto';
 
 @Injectable()

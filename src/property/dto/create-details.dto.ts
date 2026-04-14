@@ -5,6 +5,7 @@ import {
   IsDateString,
   IsArray,
   IsBoolean,
+  IsObject,
 } from "class-validator";
 import { Type } from "class-transformer";
 
@@ -15,21 +16,22 @@ export class CreateDetailsDto {
   @IsString()
   propertyName?: string;
 
-
-@IsOptional()
-@IsArray()
-@IsString({ each: true })
-preferredTenant?: string[];
-
-@IsOptional()
-@IsArray()
-@IsString({ each: true })
-preferredGuests?: string[];
-
   @IsOptional()
   @IsString()
   gender?: string;
 
+  // 👥 PREFERENCES
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  preferredTenant?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  preferredGuests?: string[];
+
+  // 📍 LOCATION
   @IsOptional()
   @IsString()
   city?: string;
@@ -46,7 +48,6 @@ preferredGuests?: string[];
   @IsString()
   landmark?: string;
 
-  // 📍 LOCATION
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
@@ -59,9 +60,11 @@ preferredGuests?: string[];
 
   // 🛏 ROOM
   @IsOptional()
+  @IsObject()
   roomType?: any;
 
   @IsOptional()
+  @IsObject()
   sharingType?: any;
 
   // 💰 PRICING
@@ -88,44 +91,21 @@ preferredGuests?: string[];
   @IsBoolean()
   foodIncluded?: boolean;
 
-
-    @IsOptional()
+  @IsOptional()
   @IsBoolean()
   parking?: boolean;
 
   @IsOptional()
+  @IsObject()
   foodType?: any;
 
   @IsOptional()
+  @IsObject()
   pgAmenities?: any;
 
   @IsOptional()
+  @IsObject()
   restrictions?: any;
-
-  @IsOptional()
-  @IsBoolean()
-  wifi?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  powerBackup?: boolean;
-
-  // 🏢 RULES
-  @IsOptional()
-  @IsBoolean()
-  smoking?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  drinking?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  nonVegAllowed?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  guardiansStay?: boolean;
 
   // ⏰ AVAILABILITY
   @IsOptional()

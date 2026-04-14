@@ -72,6 +72,7 @@ model Visit {
 
   createdAt DateTime @default(now())
 }
+
 model Property {
   id     Int @id @default(autoincrement())
   userId Int
@@ -101,15 +102,15 @@ model Property {
   depositNegotiable Boolean?
   rentNegotiable    Boolean?
 
-  // 🍽 FACILITIES (CLEAN)
+  // 🍽 FACILITIES
   foodIncluded Boolean?
   foodType     Json?
 
   /// ✅ ALL amenities in ONE place
   pgAmenities  Json?
 
+  /// ✅ FIXED (boolean correct)
   parking Boolean?
-
 
   // ⏰ AVAILABILITY
   availableFrom   DateTime?

@@ -1,55 +1,55 @@
-import {
-  IsOptional,
-  IsNumber,
-  IsBoolean,
-  IsString,
-  IsArray
-} from "class-validator";
+// import {
+//   IsOptional,
+//   IsNumber,
+//   IsBoolean,
+//   IsString,
+//   IsArray
+// } from "class-validator";
 
-import { Type } from "class-transformer";
+// import { Type } from "class-transformer";
 
-export class CreateRentDto {
+// export class CreateRentDto {
 
-  @IsString()
-  rentType: string;   // ⬅️⬅️ MAIN FIX
+//   @IsString()
+//   rentType: string;   // ⬅️⬅️ MAIN FIX
 
-  @Type(() => Number)
-  @IsNumber()
-  expectedRent: number;
+//   @Type(() => Number)
+//   @IsNumber()
+//   expectedRent: number;
 
-  @Type(() => Number)
-  @IsNumber()
-  deposit: number;
+//   @Type(() => Number)
+//   @IsNumber()
+//   deposit: number;
 
-@IsOptional()
-@Type(() => Number)
-@IsNumber()
-maintenanceAmount?: number;
+// @IsOptional()
+// @Type(() => Number)
+// @IsNumber()
+// maintenanceAmount?: number;
 
-  @IsOptional()
-  @IsBoolean()
-  rentNegotiable?: boolean;
+//   @IsOptional()
+//   @IsBoolean()
+//   rentNegotiable?: boolean;
 
-  @IsOptional()
-  @IsString()
-  maintenance?: string;
+//   @IsOptional()
+//   @IsString()
+//   maintenance?: string;
 
-  @IsOptional()
-  @IsString()
-  availableFrom?: string;
+//   @IsOptional()
+//   @IsString()
+//   availableFrom?: string;
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  preferredTenant?: string[];
+//   @IsOptional()
+//   @IsArray()
+//   @IsString({ each: true })
+//   preferredTenant?: string[];
 
-  @IsOptional()
-  furnishing?: any;
+//   @IsOptional()
+//   furnishing?: any;
 
-  @IsOptional()
-  parking?: any;
+//   @IsOptional()
+//   parking?: any;
 
-  @IsOptional()
-  @IsString()
-  description?: string;
-}
+//   @IsOptional()
+//   @IsString()
+//   description?: string;
+// }
