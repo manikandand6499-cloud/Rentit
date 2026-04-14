@@ -1,54 +1,29 @@
-// create-amenities.dto.ts
-
-import { IsObject, IsOptional, IsBoolean, IsString } from "class-validator";
+import { IsOptional, IsBoolean } from "class-validator";
 
 export class CreateAmenitiesDto {
 
-  @IsOptional()
-  parking?: any;
-
-  @IsOptional()
-  restrictions?: any;
-
-  @IsOptional()
-  @IsObject()
-  furnishing?: any;
-
-  @IsOptional()
-  societyAmenities?: any;
-
-  @IsOptional()
-  roomAmenities?: any;
-
-  @IsOptional()
-  foodType?: any;
-
+  // 🍽 FOOD
   @IsOptional()
   @IsBoolean()
   foodIncluded?: boolean;
 
   @IsOptional()
-  @IsBoolean()
-  petAllowed?: boolean;
+  foodType?: any;
 
+  // 🏠 PG AMENITIES
+  @IsOptional()
+  pgAmenities?: any;
+
+  // 📶 BASIC FACILITIES
   @IsOptional()
   @IsBoolean()
-  nonVegAllowed?: boolean;
+  wifi?: boolean;
 
   @IsOptional()
   @IsBoolean()
-  gatedCommunity?: boolean;
+  powerBackup?: boolean;
 
-  @IsOptional()
-  @IsBoolean()
-  gateSecurity?: boolean;
-
-  @IsOptional()
-  noOfFloors?: string;
-
-  @IsOptional()
-  noOfBalcony?: string;
-
+  // 🧺 SERVICES
   @IsOptional()
   @IsBoolean()
   laundry?: boolean;
@@ -57,22 +32,13 @@ export class CreateAmenitiesDto {
   @IsBoolean()
   roomCleaning?: boolean;
 
+  // 👨‍💼 MANAGEMENT
   @IsOptional()
   @IsBoolean()
   warden?: boolean;
 
-  // 🔥 FIXED FIELDS
-  @IsOptional()
-  isBusinessRunning?: any;
-
-  @IsOptional()
-  propertyCondition?: any;
-
+  // 🏢 RULES
   @IsOptional()
   @IsBoolean()
-  unitsPropertiesavailaible?: boolean;
-
-  @IsOptional()
-  @IsString()
-  directions?: string;
+  nonVegAllowed?: boolean;
 }

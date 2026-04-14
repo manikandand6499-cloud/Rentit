@@ -17,7 +17,7 @@ export class CreatePriceDto {
   */
   @Type(() => Number)
   @IsNumber()
-  expectedRent: number;
+  rent: number | undefined;
 
   /*
   ==============================
@@ -26,7 +26,7 @@ export class CreatePriceDto {
   */
   @Type(() => Number)
   @IsNumber()
-  deposit: number;
+  deposit: number | undefined;
 
   /*
   ==============================
