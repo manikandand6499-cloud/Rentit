@@ -3,7 +3,7 @@ import { IsOptional, IsString } from "class-validator";
 export class CreateBasicDto {
 
   @IsString()
-  propertyType: string | undefined;   // ✅ required
+  propertyType!: string;   // ✅ REQUIRED (no undefined)
 
   @IsOptional()
   @IsString()
@@ -15,5 +15,9 @@ export class CreateBasicDto {
 
   @IsOptional()
   @IsString()
-  gender?: string;  // Boys / Girls / Co-living
+  locality?: string; // 🔥 ADD THIS (REQUIRED in DB)
+
+  @IsOptional()
+  @IsString()
+  gender?: string;
 }

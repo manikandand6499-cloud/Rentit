@@ -37,15 +37,14 @@ async createBasic(userId: number, data: CreateBasicDto) {
     data: {
       userId,
 
-      // ✅ ALWAYS STRING
       city: data.city ?? "Chennai",
 
-      // ✅ ENSURE NOT UNDEFINED
+      // ✅ ADD THIS (MANDATORY)
+      locality: data.locality ?? "Unknown",
+
       propertyType: data.propertyType || "PG",
 
-      // ✅ OPTIONAL → use undefined (NOT null)
       gender: data.gender ?? undefined,
-
       propertyName: data.propertyName ?? undefined,
 
       currentStep: 1,
