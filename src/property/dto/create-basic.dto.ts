@@ -1,31 +1,19 @@
-import { IsOptional, IsObject, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class CreateBasicDto {
 
-  @IsOptional()
-  @IsObject()
-  furnishing?: any;
-
-  @IsOptional()
-  @IsObject()
-  otherFeatures?: any;
-
   @IsString()
-  propertyType: string;   // ✅ remove ?
+  propertyType: string | undefined;   // ✅ required
 
+  @IsOptional()
   @IsString()
-  propertyType2: string;
+  propertyName?: string;
 
   @IsOptional()
-  propertyAge?: string;
+  @IsString()
+  city?: string;
 
   @IsOptional()
-  floor?: number;
-
-  @IsOptional()
-  totalFloor?: number;
-
-  @IsOptional()
-  builtUpArea?: number;
-  buildingType: any;
+  @IsString()
+  gender?: string;  // Boys / Girls / Co-living
 }

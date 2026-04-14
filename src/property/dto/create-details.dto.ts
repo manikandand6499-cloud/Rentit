@@ -1,4 +1,3 @@
-// create-details.dto.ts
 import {
   IsOptional,
   IsString,
@@ -6,96 +5,24 @@ import {
   IsDateString,
   IsArray,
   IsBoolean,
-  IsObject,
 } from "class-validator";
 import { Type } from "class-transformer";
 
 export class CreateDetailsDto {
 
+  // 🏠 BASIC
   @IsOptional()
   @IsString()
   propertyName?: string;
 
-    @IsOptional()
-  @IsString()
-  buildingType?: string;
 
   @IsOptional()
   @IsString()
-  category?: string;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  ownershipType?: string[];
+  gender?: string;
 
   @IsOptional()
   @IsString()
-  bhkType?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  floor?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  totalFloor?: number;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  builtUpArea?: number;
-
-  @IsOptional()
-  @IsString()
-  propertyAge?: string;
-
-  @IsOptional()
-  @IsString()
-  facing?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  noticePeriod?: number;
-
-  @IsOptional()
-  @IsString()
-  occupancy?: string;
-
-  @IsOptional()
-  @IsDateString()
-  availableFrom?: string;
- 
-    @IsOptional()
-  @IsObject()
-  otherFeatures?: any;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  preferredTenant?: string[];
-
-  @IsOptional()
-  @IsString()
-  rulesAndRegulation?: string;
-
-  @IsOptional()
-  roomType?: {
-    type: string[];
-    rent?: number;
-    deposit?: number;
-  }[];
-
-  @IsOptional()
-  @IsString()
-  location?: string;
+  city?: string;
 
   @IsOptional()
   @IsString()
@@ -109,13 +36,44 @@ export class CreateDetailsDto {
   @IsString()
   landmark?: string;
 
+  // 📍 LOCATION
   @IsOptional()
-  @IsString()
-  pincode?: string;
- 
+  @Type(() => Number)
+  @IsNumber()
+  latitude?: number;
 
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  longitude?: number;
 
-  // ✅ IMPORTANT FIELDS
+  // 🛏 ROOM
+  @IsOptional()
+  roomType?: any;
+
+  @IsOptional()
+  sharingType?: any;
+
+  // 💰 PRICING
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  rent?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  deposit?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  rentNegotiable?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  depositNegotiable?: boolean;
+
+  // 🍽 FACILITIES
   @IsOptional()
   @IsBoolean()
   foodIncluded?: boolean;
@@ -124,30 +82,44 @@ export class CreateDetailsDto {
   foodType?: any;
 
   @IsOptional()
+  pgAmenities?: any;
+
+  @IsOptional()
+  @IsBoolean()
+  wifi?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  powerBackup?: boolean;
+
+  // 🏢 RULES
+  @IsOptional()
+  @IsBoolean()
+  smoking?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  drinking?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  nonVegAllowed?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  guardiansStay?: boolean;
+
+  // ⏰ AVAILABILITY
+  @IsOptional()
+  @IsDateString()
+  availableFrom?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  noticePeriod?: number;
+
+  @IsOptional()
   @IsString()
   gateClosingTime?: string;
-
-  @IsOptional()
-  furnishing?: any;
-
-  @IsOptional()
-  @IsArray()
-  placeisavailablefor?: string[];
-
-@IsOptional()
-@IsString()
-propertyType2?: string;
-
-@IsOptional()
-@IsString()
-city?: string;
-
-@IsOptional()
-@IsNumber()
-latitude?: number;
-
-@IsOptional()
-@IsNumber()
-longitude?: number;
-  rentType: any;
 }

@@ -32,98 +32,89 @@ export class PropertyService {
   STEP 1 — CREATE BASIC
   ============================================================
   */
-  async createBasic(userId: number, data: CreateBasicDto) {
-    return this.prisma.property.create({
-      data: {
-        userId: userId,           // ✅ MUST
-        city: "Chennai",          // ⚠️ TEMP (or take from frontend)
+async createBasic(userId: number, data: CreateBasicDto) {
+  return this.prisma.property.create({
+    data: {
+      userId,
 
-        propertyType: data.propertyType,
-        propertyType2: data.propertyType2 ?? "",
-        propertyAge: data.propertyAge,
-        buildingType: data.buildingType,
-        floor: data.floor,
-        totalFloor: data.totalFloor,
-        builtUpArea: data.builtUpArea,
+      // ✅ ALWAYS STRING
+      city: data.city ?? "Chennai",
 
-        furnishing: data.furnishing ?? undefined,
-        otherFeatures: data.otherFeatures,
+      // ✅ ENSURE NOT UNDEFINED
+      propertyType: data.propertyType || "PG",
 
-        currentStep: 2,
-      }
-    });
-  }
+      // ✅ OPTIONAL → use undefined (NOT null)
+      gender: data.gender ?? undefined,
 
-  /*
-  ============================================================
-  STEP 2 — PROPERTY DETAILS
-  ============================================================
-  */
-  async updateDetails(
-    id: number,
-    userId: number,
-    data: CreateDetailsDto,
-  ) {
-    await this.checkPropertyOwner(id, userId);
+      propertyName: data.propertyName ?? undefined,
 
-    console.log("DTO DATA:", data);
+      currentStep: 1,
+    },
+  });
+}
 
-    return this.prisma.property.update({
-      where: { id },
-      data: {
+async updateDetails(
+  id: number,
+  userId: number,
+  data: CreateDetailsDto,
+) {
+  await this.checkPropertyOwner(id, userId);
 
-        // 🔥 LOCATION
-        rentType: data.rentType,
-        city: data.city ?? undefined,
-        street: data.street ?? undefined,
-        locality: data.locality ?? undefined,
-        landmark: data.landmark ?? undefined,
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      // 📍 LOCATION
+      city: data.city ?? undefined,
+      street: data.street ?? undefined,
+      locality: data.locality ?? undefined,
+      landmark: data.landmark ?? undefined,
+      latitude: data.latitude ?? undefined,
+      longitude: data.longitude ?? undefined,
 
-        latitude: data.latitude ?? undefined,
-        longitude: data.longitude ?? undefined,
-        facing: data.facing ?? undefined,
+      // 🏠 PROPERTY INFO
+      propertyName: data.propertyName ?? undefined,
+      gender: data.gender ?? undefined,
 
-        // 🔥 BASIC DETAILS
-        propertyType2: data.propertyType2 ?? "",
-        buildingType: data.buildingType ?? undefined,
-        propertyAge: data.propertyAge ?? undefined,
-        floor: data.floor ?? undefined,
-        totalFloor: data.totalFloor ?? undefined,
-        builtUpArea: data.builtUpArea ?? undefined,
+      // 🛏 ROOM
+      roomType: data.roomType ?? undefined,
+      sharingType: data.sharingType ?? undefined,
 
-        furnishing: data.furnishing ?? undefined,
-        otherFeatures: data.otherFeatures ?? undefined,
+      // 💰 PRICING
+      rent: data.rent ?? undefined,
+      deposit: data.deposit ?? undefined,
+      rentNegotiable: data.rentNegotiable ?? undefined,
+      depositNegotiable: data.depositNegotiable ?? undefined,
 
-        // 🔥 DATE / TIME
-        availableFrom: data.availableFrom
-          ? new Date(data.availableFrom)
-          : undefined,
+      // 🍽 FACILITIES
+      foodIncluded: data.foodIncluded ?? undefined,
+      foodType: data.foodType
+        ? { list: data.foodType }
+        : undefined,
+      pgAmenities: data.pgAmenities ?? undefined,
+      wifi: data.wifi ?? undefined,
+      powerBackup: data.powerBackup ?? undefined,
 
-        gateClosingTime: data.gateClosingTime
-          ? new Date(`1970-01-01T${data.gateClosingTime}:00`)
-          : undefined,
+      // 🏢 RULES
+      smoking: data.smoking ?? undefined,
+      drinking: data.drinking ?? undefined,
+      nonVegAllowed: data.nonVegAllowed ?? undefined,
+      guardiansStay: data.guardiansStay ?? undefined,
 
-        // 🔥 PG DETAILS (IMPORTANT)
-        placeisavailablefor: data.placeisavailablefor ?? undefined,
-        preferredTenant: data.preferredTenant ?? undefined,
-        foodIncluded: data.foodIncluded ?? undefined,
+      // ⏰ AVAILABILITY
+      availableFrom: data.availableFrom
+        ? new Date(data.availableFrom)
+        : undefined,
 
-        // 🔥 EXTRA DETAILS
-        rulesAndRegulation: data.rulesAndRegulation ?? undefined,
-        description: data.description ?? undefined,
+      noticePeriod: data.noticePeriod ?? undefined,
 
-        // 🔥 JSON FIELD
-        foodType: data.foodType
-          ? { list: data.foodType }
-          : undefined,
+      gateClosingTime: data.gateClosingTime
+        ? new Date(`1970-01-01T${data.gateClosingTime}:00`)
+        : undefined,
 
-        // 🔥 OPTIONAL
-        roomType: data.roomType ?? undefined,
-
-        currentStep: 2,
-      },
-    });
-  }
+      currentStep: 2,
+    },
+  });
+}
 /*
 ============================================================
 GET ALL PROPERTIES
