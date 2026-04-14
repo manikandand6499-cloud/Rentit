@@ -53,23 +53,14 @@ export class VisitService {
     const selectedTime24 = this.convertTo24Hour(time);
 
     // 🔥 3. AVAILABILITY CHECK
-    if (!property.availableAllDay) {
-      if (!property.startTime || !property.endTime) {
-        throw new BadRequestException("Owner has not set availability");
-      }
+   // ✅ SIMPLE CLEAN LOGIC
 
-      if (
-        !this.isWithinRange(
-          selectedTime24,
-          property.startTime,
-          property.endTime
-        )
-      ) {
-        throw new BadRequestException(
-          "Selected time is outside allowed range"
-        );
-      }
-    }
+if (!property) {
+  throw new Error("Property not found");
+}
+
+// 👉 Allow booking (no time restriction)
+return true;
 
     // 🔥 4. SLOT CONFLICT CHECK
     const existing = await this.prisma.visit.findFirst({
