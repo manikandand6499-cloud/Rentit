@@ -72,13 +72,14 @@ export class PropertyService {
       foodIncluded: data.foodIncluded ?? undefined,
       foodType: data.foodType ?? undefined,
 
+      parking: data.parking ?? undefined,
+
       /// ✅ ONLY THIS (IMPORTANT)
       pgAmenities: data.pgAmenities ?? undefined,
 
-      smoking: data.smoking ?? undefined,
-      drinking: data.drinking ?? undefined,
-      nonVegAllowed: data.nonVegAllowed ?? undefined,
-      guardiansStay: data.guardiansStay ?? undefined,
+      restrictions: data.restrictions ?? undefined,
+
+     
 
       availableFrom: data.availableFrom
         ? new Date(data.availableFrom)
@@ -109,13 +110,13 @@ export class PropertyService {
       foodIncluded: data.foodIncluded ?? undefined,
       foodType: data.foodType ?? undefined,
 
+      parking: data.parking ?? undefined,
+
       /// ✅ MAIN FIELD
       pgAmenities: data.pgAmenities ?? undefined,
 
-      nonVegAllowed: data.nonVegAllowed ?? undefined,
-      drinking: data.drinking ?? undefined,
-      smoking: data.smoking ?? undefined,
-      guardiansStay: data.guardiansStay ?? undefined,
+          restrictions: data.restrictions ?? undefined,
+
 
       propertyDescription: data.propertyDescription ?? undefined,
 

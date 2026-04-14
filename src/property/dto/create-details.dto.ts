@@ -88,11 +88,19 @@ preferredGuests?: string[];
   @IsBoolean()
   foodIncluded?: boolean;
 
+
+    @IsOptional()
+  @IsBoolean()
+  parking?: boolean;
+
   @IsOptional()
   foodType?: any;
 
   @IsOptional()
   pgAmenities?: any;
+
+  @IsOptional()
+  restrictions?: any;
 
   @IsOptional()
   @IsBoolean()

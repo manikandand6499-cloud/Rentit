@@ -108,11 +108,10 @@ model Property {
   /// ✅ ALL amenities in ONE place
   pgAmenities  Json?
 
+  parking Boolean?
+
   // 🏢 RULES
-  smoking       Boolean?
-  drinking      Boolean?
-  nonVegAllowed Boolean?
-  guardiansStay Boolean?
+  restrictions Json?
 
   // ⏰ AVAILABILITY
   availableFrom   DateTime?

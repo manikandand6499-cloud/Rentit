@@ -7,6 +7,11 @@ export class CreateAmenitiesDto {
   @IsBoolean()
   foodIncluded?: boolean;
 
+
+ @IsOptional()
+  @IsBoolean()
+  parking?: boolean;
+  
   @IsOptional()
   @IsObject()
   foodType?: Record<string, any>;
@@ -24,6 +29,19 @@ export class CreateAmenitiesDto {
     refrigerator?: boolean;
     mess?: boolean;
   };
+
+
+
+    @IsOptional()
+  @IsObject()
+  restrictions?: {
+    Smoking?: boolean;
+    Alcohol?: boolean;
+    LoudMusic?: boolean;
+    NonVeg?: boolean;
+    GirlsEntry?: boolean;
+  };
+  
 
   // 🏢 RULES
   @IsOptional()
