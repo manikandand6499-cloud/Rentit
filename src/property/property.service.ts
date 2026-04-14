@@ -130,7 +130,11 @@ export class PropertyService {
   GET ALL PROPERTIES
   ============================================================
   */
+<<<<<<< HEAD
  async getAllProperties(lat?: number, lng?: number, city?: string, locality?: string | undefined, propertyType?: string | undefined) {
+=======
+  async getAllProperties(lat?: number, lng?: number, city?: string, locality?: string | undefined, propertyType?: string | undefined) {
+>>>>>>> 95d796d (rentit v1 changes)
     const where: any = {
       isDeleted: false, // ✅ MUST
     }; // ← removed isDraft filter for now
@@ -149,8 +153,12 @@ export class PropertyService {
         createdAt: true,
         latitude: true,     // ✅ ADD THIS
         longitude: true,
+<<<<<<< HEAD
         propertyType: true,   // ✅ ADD THIS
         images: true,
+=======
+        propertyType: true   // ✅ ADD THIS
+>>>>>>> 95d796d (rentit v1 changes)
       },
       orderBy: { createdAt: 'desc' },
     });

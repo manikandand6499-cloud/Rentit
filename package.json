@@ -21,6 +21,7 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.15",
     "@nestjs/schedule": "^6.1.1",
+    "@nestjs/typeorm": "^11.0.1",
     "@prisma/client": "^5.22.0",
     "@react-google-maps/api": "^2.20.8",
     "axios": "^1.14.0",
