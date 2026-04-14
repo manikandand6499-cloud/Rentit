@@ -70,7 +70,7 @@ export class PropertyService {
 
         foodIncluded: data.foodIncluded ?? undefined,
         foodType: data.foodType ? { list: data.foodType } : undefined,
-        pgAmenities: data.pgAmenities ?? undefined,
+pgAmenities: data.pgAmenities ?? undefined,
         wifi: data.wifi ?? undefined,
         powerBackup: data.powerBackup ?? undefined,
 
@@ -108,13 +108,15 @@ export class PropertyService {
     foodIncluded: data.foodIncluded ?? undefined,
     foodType: data.foodType ?? undefined,
 
-    /// ✅ STORE EVERYTHING HERE
+    /// ✅ NEW STRUCTURE
     pgAmenities: data.pgAmenities ?? undefined,
 
     nonVegAllowed: data.nonVegAllowed ?? undefined,
     drinking: data.drinking ?? undefined,
     smoking: data.smoking ?? undefined,
     guardiansStay: data.guardiansStay ?? undefined,
+
+    propertyDescription: data.propertyDescription ?? undefined,
 
     currentStep: 4,
   },

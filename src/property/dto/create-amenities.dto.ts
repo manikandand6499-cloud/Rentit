@@ -41,5 +41,9 @@ export class CreateAmenitiesDto {
   @IsOptional()
   @IsBoolean()
   guardiansStay?: boolean;
+  
+  @IsOptional()
+  @IsObject()
+  propertyDescription?: string;
 
 }
