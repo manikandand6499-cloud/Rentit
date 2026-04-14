@@ -37,54 +37,70 @@ export class VisitService {
     return selected >= start && selected <= end;
   }
 
-  async createVisit(userId: number, dto: CreateVisitDto) {
-    const { propertyId, date, time } = dto;
+async createVisit(userId: number, dto: CreateVisitDto) {
+  const { propertyId, date, time } = dto;
 
-    // 🔥 1. CHECK PROPERTY
-    const property = await this.prisma.property.findUnique({
-      where: { id: propertyId },
-    });
-
-    if (!property) {
-      throw new NotFoundException("Property not found");
-    }
-
-    // 🔥 2. TIME CONVERT
-    const selectedTime24 = this.convertTo24Hour(time);
-
-    // 🔥 3. AVAILABILITY CHECK
-   // ✅ SIMPLE CLEAN LOGIC
-
-if (!property) {
-  throw new Error("Property not found");
-}
-
-// 👉 Allow booking (no time restriction)
-return true;
-
-    // 🔥 4. SLOT CONFLICT CHECK
-    const existing = await this.prisma.visit.findFirst({
-      where: {
-        propertyId,
-        date,
-        time,
-      },
-    });
-
-    if (existing) {
-      throw new BadRequestException(
-        "This time slot already booked macha ⚠️"
-      );
-    }
-
-    // 🔥 5. CREATE VISIT
-    return this.prisma.visit.create({
-      data: {
-        userId,
-        propertyId,
-        date,
-        time,
-      },
-    });
+  // 🔥 1. VALIDATE propertyId FIRST
+  if (!propertyId) {
+    throw new BadRequestException("propertyId is required");
   }
+
+  // 🔥 2. CHECK PROPERTY EXISTS
+  const property = await this.prisma.property.findUnique({
+    where: { id: propertyId },
+  });
+
+  if (!property) {
+    throw new NotFoundException("Property not found");
+  }
+
+  // 🔥 3. VALIDATE INPUT
+  if (!date) {
+    throw new BadRequestException("Date is required");
+  }
+
+  if (!time) {
+    throw new BadRequestException("Time is required");
+  }
+
+  // 🔥 4. HANDLE TIME FORMAT
+  let selectedTime24 = time;
+
+  if (time.includes("AM") || time.includes("PM")) {
+    selectedTime24 = this.convertTo24Hour(time);
+  }
+
+  // 🔥 5. PREVENT PAST BOOKING
+  const now = new Date();
+  const visitDateTime = new Date(`${date}T${selectedTime24}`);
+
+  if (visitDateTime < now) {
+    throw new BadRequestException("Cannot book past time ⛔");
+  }
+
+  // 🔥 6. SLOT CONFLICT CHECK
+  const existing = await this.prisma.visit.findFirst({
+    where: {
+      propertyId,
+      date,
+      time: selectedTime24,
+    },
+  });
+
+  if (existing) {
+    throw new BadRequestException(
+      "This time slot already booked macha ⚠️"
+    );
+  }
+
+  // 🔥 7. CREATE VISIT
+  return this.prisma.visit.create({
+    data: {
+      userId,
+      propertyId,
+      date,
+      time: selectedTime24,
+    },
+  });
+}
 }

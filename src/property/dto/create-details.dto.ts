@@ -17,6 +17,15 @@ export class CreateDetailsDto {
 
 
   @IsOptional()
+@IsArray()
+@IsString({ each: true })
+preferredTenant?: string[];
+
+@IsOptional()
+@IsBoolean()
+preferredGuests?: boolean;
+
+  @IsOptional()
   @IsString()
   gender?: string;
 
