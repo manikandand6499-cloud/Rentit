@@ -70,121 +70,144 @@ model Visit {
   createdAt DateTime @default(now())
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int            @id @default(autoincrement())
+  mobile            String         @unique
+  createdAt         DateTime       @default(now())
+  email             String?
+  isProfileComplete Boolean        @default(false)
+  name              String?
+  likes             Like[]
+  properties        Property[]
+  subscriptions     Subscription[]
+  visits            Visit[]
+}
+
+model Subscription {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  planType     String
+  planDuration String
+  amount       Int
+  paymentId    String
+  propertyType String
+  startDate    DateTime
+  expiryDate   DateTime
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model Otp {
+  id        Int      @id @default(autoincrement())
+  mobile    String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  propertyId Int
+  createdAt  DateTime @default(now())
+  property   Property @relation(fields: [propertyId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, propertyId])
+}
+
+model Visit {
+  id        Int      @id @default(autoincrement())
+  date      String
+  time      String
+  status    String   @default("pending")
+  language  String   @default("en")
+
+  userId    Int
+  propertyId Int
+
+  user      User     @relation(fields: [userId], references: [id])
+  property  Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
 model Property {
-  id                        Int       @id @default(autoincrement())
-  userId                    Int
-  city                      String
-  propertyType              String
-  propertyType2             String    @default("")
-  propertyName              String?
-  category                  String?
-  floor                     Int?
-  totalFloor                Int?
-  description               String?
-  builtUpArea               Float?
-  propertyAge               String?
-  facing                    String?
-  noticePeriod              Int?
-  occupancy                 String?
-  availableFrom             DateTime?
-  location                  String?
-  street                    String?
-  locality                  String?
-  landmark                  String?
-  pincode                   String?
-  gateSecurity              Boolean?
-  rent                      Float?
-  deposit                   Float?
-  rentType                  String?
-  rentNegotiable            Boolean?
-  currentStep               Int       @default(1)
-  isDraft                   Boolean   @default(true)
-  createdAt                 DateTime  @default(now())
-  updatedAt                 DateTime  @updatedAt
-  images                    String[]  @default([])
-  video                     String?
-  bhkType                   String?
-  contactName               String?
-  foodIncluded              Boolean?
-  gatedCommunity            Boolean?
-  mobileNo                  String?
-  noOfBalcony               String?
-  noOfFloors                String?
-  nonVegAllowed             Boolean?
-  petAllowed                Boolean?
-  repliesWithin             String?
-  restrictions              Json?
-  roomType                  Json?
-  rulesAndRegulation        String?
-  sharingType               Json?
-  societyAmenities          Json?
-  parking                   Json?
-  furnishing                Json?
-  whatsapp                  Boolean?
-  preferredTenant           Json?
-  ownershipType             Json?
-  latitude                  Float?
-  longitude                 Float?
-  deletedAt                 DateTime?
-  isDeleted                 Boolean   @default(false)
-  GymAllowed                Boolean?
-  IdealFor                  Json?
-  SecondmobileNo            String?
-  Washroom                  Json?
-  addOthertags              String?
-  availabilityDay           Json?
-  availableAllDay           Boolean?
-  bathroom                  String?
-  closingTime               DateTime?
-  commonTV                  Boolean?
-  cookingAllowed            Boolean?
-  depositNegotiable         Boolean?
-  drinking                  Boolean?
-  expectedRent              Float?
-  feedback                  String?
-  flatParking               Json?
-  gateClosingTime           DateTime?
-  gender                    String?
-  guardiansStay             Boolean?
-  isBusinessRunning         Json?
-  laundry                   Json?
-  leaseDuration             String?
-  lift                      Json?
-  maintenanceAmount         String?
-  maintenanceExtra          Boolean?
-  mess                      Boolean?
-  monthlyMaintenance        Json?
-  noOfAvailableSlots        String?
-  otherFeatures             Json?
-  parkingType               Json?
-  pgAmenities               Json?
-  powerBackup               Boolean?
-  preferredGuests           Boolean?
-  propertyCondition         Json?
-  propertyDescription       String?
-  propertyavailablefor      Json?
-  propertycleaned           Boolean?
-  propertypainted           Boolean?
-  refrigerator              Boolean?
-  roomCleaning              Json?
-  setDirection              String?
-  shownBy                   String?
-  smoking                   Boolean?
-  startTime                 String?
-  endTime                   String?
-  suitableFor               String[]
-  unitsPropertiesavailaible Json?
-  warden                    Json?
-  waterStorageFacility      Boolean?
-  waterSupply               Json?
-  whatsappupdates           Boolean?
-  wifi                      Boolean?
-  foodType                  Json?
-  roomAmenities             Json?
-  placeisavailablefor       Json?
-  buildingType              String?
-  lockinPeriod              String?
-  likes                     Like[]
-  visits                    Visit[]
-  user                      User      @relation(fields: [userId], references: [id])
+  id            Int      @id @default(autoincrement())
+  userId        Int
+
+  // 📍 BASIC INFO
+  city          String
+  locality      String
+  street        String?
+  landmark      String?
+  latitude      Float?
+  longitude     Float?
+
+  // 🏠 PROPERTY INFO
+  propertyName  String?
+  propertyType  String   // PG / Hostel
+  gender        String?  // Boys / Girls / Co-living
+
+  // 🛏 ROOM DETAILS
+  roomType      Json?    // Single / Double / etc
+  sharingType   Json?
+  noOfRooms     Int?
+  noOfBeds      Int?
+
+  // 💰 PRICING
+  rent          Float?
+  deposit       Float?
+  depositNegotiable Boolean?
+  rentNegotiable Boolean?
+
+  // 🍽 FOOD & FACILITIES
+  foodIncluded  Boolean?
+  foodType      Json?
+  pgAmenities   Json?
+  wifi          Boolean?
+  powerBackup   Boolean?
+  laundry       Json?
+  roomCleaning  Json?
+
+  // 🏢 RULES
+  smoking       Boolean?
+  drinking      Boolean?
+  nonVegAllowed Boolean?
+  guardiansStay Boolean?
+
+  // ⏰ AVAILABILITY
+  availableFrom DateTime?
+  noticePeriod  Int?
+  gateClosingTime DateTime?
+
+  // 📸 MEDIA
+  images        String[] @default([])
+  video         String?
+
+  // 📞 CONTACT
+  contactName   String?
+  mobileNo      String?
+  whatsapp      Boolean?
+  whatsappupdates Boolean?
+
+  // ⚙️ SYSTEM
+  currentStep   Int      @default(1)
+  isDraft       Boolean  @default(true)
+  isDeleted     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // 🔗 RELATIONS
+  user          User     @relation(fields: [userId], references: [id])
 }
