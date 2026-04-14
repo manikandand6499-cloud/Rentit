@@ -17,6 +17,10 @@ export class CreateContactDto {
   @IsBoolean()
   whatsapp?: boolean;
 
+  @IsOptional()
+@IsBoolean()
+whatsappupdates?: boolean;
+
    @IsOptional()
   laundry?: boolean;
 

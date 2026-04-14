@@ -186,15 +186,18 @@ export class PropertyService {
   async updateContact(id: number, userId: number, data: CreateContactDto) {
     await this.checkPropertyOwner(id, userId);
 
-    return this.prisma.property.update({
-      where: { id },
-      data: {
-        contactName: data.contactName,
-        mobileNo: data.mobileNo,
-        whatsapp: data.whatsapp,
-        currentStep: 6,
-      },
-    });
+   return this.prisma.property.update({
+  where: { id },
+  data: {
+    contactName: data.contactName ?? undefined,
+    mobileNo: data.mobileNo ?? undefined,
+    whatsapp: data.whatsapp ?? undefined,
+    whatsappupdates: data.whatsappupdates ?? undefined,
+
+    currentStep: 7,
+    isDraft: false,
+  },
+});
   }
 
   /*

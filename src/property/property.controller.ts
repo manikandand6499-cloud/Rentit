@@ -152,14 +152,18 @@ export class PropertyController {
   STEP 6 - CONTACT
   ==============================
   */
-  @Put(':id/contact')
-  updateContact(@Param('id') id: string, @Req() req, @Body() dto: CreateContactDto) {
-    return this.propertyService.updateContact(
-      Number(id),
-      req.user.userId,
-      dto,
-    );
-  }
+@Put(':id/contact')
+updateContact(
+  @Param('id') id: string,
+  @Req() req,
+  @Body() dto: CreateContactDto,
+) {
+  return this.propertyService.updateContact(
+    Number(id),
+    req.user.userId,
+    dto,
+  );
+}
 
   /*
   ==============================
