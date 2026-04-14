@@ -56,10 +56,11 @@ export class PropertyService {
       landmark: data.landmark ?? undefined,
       latitude: data.latitude ?? undefined,
       longitude: data.longitude ?? undefined,
-
+      
       propertyName: data.propertyName ?? undefined,
       gender: data.gender ?? undefined,
-
+       preferredGuests: data.preferredGuests ?? undefined,
+        preferredTenant: data.preferredTenant ?? undefined,
       roomType: data.roomType ?? undefined,
       sharingType: data.sharingType ?? undefined,
 
