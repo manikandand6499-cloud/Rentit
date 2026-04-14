@@ -1,20 +1,24 @@
+// s3.upload.ts (Cloudflare R2)
+
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3 } from "./s3.config";
+import { Express } from "express";
 
-export const uploadToS3 = async (
-  file: Express.Multer.File,
+export const uploadToR2 = async (
+ file: any
 ) => {
 
   const key = `property/${Date.now()}-${file.originalname}`;
 
   await s3.send(
     new PutObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME,
+      Bucket: process.env.R2_BUCKET_NAME,
       Key: key,
       Body: file.buffer,
       ContentType: file.mimetype,
     }),
   );
 
-  return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+  /// 🔥 IMPORTANT: Use CDN URL (NOT R2 URL)
+  return `${process.env.R2_PUBLIC_URL}/${key}`;
 };

@@ -1,3 +1,5 @@
+// payment.controller.ts
+
 import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { RazorpayService } from './razorpay.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
