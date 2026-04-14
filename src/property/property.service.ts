@@ -45,54 +45,54 @@ export class PropertyService {
   ============================
   */
   async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
-    await this.checkPropertyOwner(id, userId);
+  await this.checkPropertyOwner(id, userId);
 
-    return this.prisma.property.update({
-      where: { id },
-      data: {
-        city: data.city ?? undefined,
-        street: data.street ?? undefined,
-        locality: data.locality ?? undefined,
-        landmark: data.landmark ?? undefined,
-        latitude: data.latitude ?? undefined,
-        longitude: data.longitude ?? undefined,
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      city: data.city ?? undefined,
+      street: data.street ?? undefined,
+      locality: data.locality ?? undefined,
+      landmark: data.landmark ?? undefined,
+      latitude: data.latitude ?? undefined,
+      longitude: data.longitude ?? undefined,
 
-        propertyName: data.propertyName ?? undefined,
-        gender: data.gender ?? undefined,
+      propertyName: data.propertyName ?? undefined,
+      gender: data.gender ?? undefined,
 
-        roomType: data.roomType ?? undefined,
-        sharingType: data.sharingType ?? undefined,
+      roomType: data.roomType ?? undefined,
+      sharingType: data.sharingType ?? undefined,
 
-        rent: data.rent ?? undefined,
-        deposit: data.deposit ?? undefined,
-        rentNegotiable: data.rentNegotiable ?? undefined,
-        depositNegotiable: data.depositNegotiable ?? undefined,
+      rent: data.rent ?? undefined,
+      deposit: data.deposit ?? undefined,
+      rentNegotiable: data.rentNegotiable ?? undefined,
+      depositNegotiable: data.depositNegotiable ?? undefined,
 
-        foodIncluded: data.foodIncluded ?? undefined,
-        foodType: data.foodType ? { list: data.foodType } : undefined,
-pgAmenities: data.pgAmenities ?? undefined,
-        wifi: data.wifi ?? undefined,
-        powerBackup: data.powerBackup ?? undefined,
+      foodIncluded: data.foodIncluded ?? undefined,
+      foodType: data.foodType ?? undefined,
 
-        smoking: data.smoking ?? undefined,
-        drinking: data.drinking ?? undefined,
-        nonVegAllowed: data.nonVegAllowed ?? undefined,
-        guardiansStay: data.guardiansStay ?? undefined,
+      /// ✅ ONLY THIS (IMPORTANT)
+      pgAmenities: data.pgAmenities ?? undefined,
 
-        availableFrom: data.availableFrom
-          ? new Date(data.availableFrom)
-          : undefined,
+      smoking: data.smoking ?? undefined,
+      drinking: data.drinking ?? undefined,
+      nonVegAllowed: data.nonVegAllowed ?? undefined,
+      guardiansStay: data.guardiansStay ?? undefined,
 
-        noticePeriod: data.noticePeriod ?? undefined,
+      availableFrom: data.availableFrom
+        ? new Date(data.availableFrom)
+        : undefined,
 
-        gateClosingTime: data.gateClosingTime
-          ? new Date(`1970-01-01T${data.gateClosingTime}:00`)
-          : undefined,
+      noticePeriod: data.noticePeriod ?? undefined,
 
-        currentStep: 2,
-      },
-    });
-  }
+      gateClosingTime: data.gateClosingTime
+        ? new Date(`1970-01-01T${data.gateClosingTime}:00`)
+        : undefined,
+
+      currentStep: 2,
+    },
+  });
+}
 
   /*
   ============================
@@ -100,28 +100,28 @@ pgAmenities: data.pgAmenities ?? undefined,
   ============================
   */
   async updateAmenities(id: number, userId: number, data: CreateAmenitiesDto) {
-    await this.checkPropertyOwner(id, userId);
+  await this.checkPropertyOwner(id, userId);
 
-   return this.prisma.property.update({
-  where: { id },
-  data: {
-    foodIncluded: data.foodIncluded ?? undefined,
-    foodType: data.foodType ?? undefined,
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      foodIncluded: data.foodIncluded ?? undefined,
+      foodType: data.foodType ?? undefined,
 
-    /// ✅ NEW STRUCTURE
-    pgAmenities: data.pgAmenities ?? undefined,
+      /// ✅ MAIN FIELD
+      pgAmenities: data.pgAmenities ?? undefined,
 
-    nonVegAllowed: data.nonVegAllowed ?? undefined,
-    drinking: data.drinking ?? undefined,
-    smoking: data.smoking ?? undefined,
-    guardiansStay: data.guardiansStay ?? undefined,
+      nonVegAllowed: data.nonVegAllowed ?? undefined,
+      drinking: data.drinking ?? undefined,
+      smoking: data.smoking ?? undefined,
+      guardiansStay: data.guardiansStay ?? undefined,
 
-    propertyDescription: data.propertyDescription ?? undefined,
+      propertyDescription: data.propertyDescription ?? undefined,
 
-    currentStep: 4,
-  },
-});
-  }
+      currentStep: 4,
+    },
+  });
+}
 
   /*
   ============================
