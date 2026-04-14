@@ -16,14 +16,15 @@ export class CreateDetailsDto {
   propertyName?: string;
 
 
-  @IsOptional()
+@IsOptional()
 @IsArray()
 @IsString({ each: true })
 preferredTenant?: string[];
 
 @IsOptional()
-@IsBoolean()
-preferredGuests?: boolean;
+@IsArray()
+@IsString({ each: true })
+preferredGuests?: string[];
 
   @IsOptional()
   @IsString()
