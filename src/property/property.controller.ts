@@ -25,12 +25,12 @@ import { CreateContactDto } from './dto/create-contact.dto';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-import { uploadToS3 } from '../common/s3.upload';
 import { UpdateLocationDto } from './dto/location.dto';
 import { UpdateAvailabilityDto } from './dto/availability.dto';
 import { CreateAdditionalDto } from './dto/create-additional.dto';
 import { CreateRentDto } from './dto/create-rent.dto';
 import { CreateAdditionalDetailsDto } from './dto/create-residential-additional-details.dto';
+import { uploadToR2 } from 'src/common/s3.upload';
 
 @Controller('property')
 @UseGuards(JwtAuthGuard)
@@ -183,11 +183,11 @@ getAllProperties(
 
   }
 
-  /*
-  ==============================
-  STEP 5 - UPLOAD IMAGES
-  ==============================
-  */
+ /*
+==============================
+STEP 5 - UPLOAD IMAGES (R2)
+==============================
+*/
 @Post(':id/upload-images')
 @UseInterceptors(FilesInterceptor('files'))
 async uploadImages(
@@ -201,8 +201,8 @@ async uploadImages(
   const newUrls: string[] = [];
 
   for (const file of files) {
-    const url = await uploadToS3(file); // ✅ S3 upload
-    console.log("Uploaded URL:", url); // 🔥 DEBUG
+    const url = await uploadToR2(file); // 🔥 R2 upload
+    console.log("Uploaded URL:", url);
     newUrls.push(url);
   }
 
@@ -214,29 +214,29 @@ async uploadImages(
     finalImages,
   );
 }
-  /*
-  ==============================
-  STEP 5 - UPLOAD VIDEO
-  ==============================
-  */
 
-  @Post(':id/upload-video')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadVideo(
-    @Param('id') id: string,
-    @Req() req,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
 
-    const url = await uploadToS3(file);
+/*
+==============================
+STEP 5 - UPLOAD VIDEO (R2)
+==============================
+*/
+@Post(':id/upload-video')
+@UseInterceptors(FileInterceptor('file'))
+async uploadVideo(
+  @Param('id') id: string,
+  @Req() req,
+  @UploadedFile() file: Express.Multer.File,
+) {
+  const url = await uploadToR2(file); // 🔥 R2 upload
 
-    return this.propertyService.saveVideo(
-      Number(id),
-      req.user.userId,
-      url,
-    );
+  return this.propertyService.saveVideo(
+    Number(id),
+    req.user.userId,
+    url,
+  );
+}
 
-  }
 
   /*
   ==============================

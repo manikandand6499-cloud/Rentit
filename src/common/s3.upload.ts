@@ -5,7 +5,7 @@ import { s3 } from "./s3.config";
 import { Express } from "express";
 
 export const uploadToR2 = async (
- file: any
+  file: Express.Multer.File
 ) => {
 
   const key = `property/${Date.now()}-${file.originalname}`;
