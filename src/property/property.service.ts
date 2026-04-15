@@ -31,7 +31,6 @@ export class PropertyService {
         city: data.city ?? "Chennai",
         locality: data.locality ?? "Unknown",
         propertyType: data.propertyType || "PG",
-        gender: data.gender ?? undefined,
         propertyName: data.propertyName ?? undefined,
         currentStep: 1,
       },
@@ -59,7 +58,6 @@ export class PropertyService {
 
       /// 🏠 BASIC
       propertyName: data.propertyName ?? undefined,
-      gender: data.gender ?? undefined,
 
       /// 👥 PREFERENCES
       preferredGuests: data.preferredGuests ?? undefined,
@@ -70,11 +68,7 @@ export class PropertyService {
         ? JSON.parse(JSON.stringify(data.roomType))
         : undefined,
 
-      /// 💰 PRICING
-      rent: data.rent ?? undefined,
-      deposit: data.deposit ?? undefined,
-      rentNegotiable: data.rentNegotiable ?? undefined,
-      depositNegotiable: data.depositNegotiable ?? undefined,
+    
 
       /// 🍽 FOOD (🔥 FIXED)
       foodIncluded: data.foodIncluded ?? undefined,
@@ -153,8 +147,7 @@ export class PropertyService {
       data: {
         rent: data.rent ?? undefined,
         deposit: data.deposit ?? undefined,
-        rentNegotiable: data.rentNegotiable ?? undefined,
-        depositNegotiable: data.depositNegotiable ?? undefined,
+      
         currentStep: 4,
       },
     });
