@@ -43,55 +43,33 @@ export class PropertyService {
   STEP 2 — DETAILS
   ============================
   */
-  async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
+ async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
   await this.checkPropertyOwner(id, userId);
 
- return this.prisma.property.update({
-  where: { id },
-  data: {
-    city: data.city ?? undefined,
-    locality: data.locality ?? undefined,
-    street: data.street ?? undefined,
-    landmark: data.landmark ?? undefined,
+  return this.prisma.property.update({
+    where: { id },
+    data: {
+      propertyName: data.propertyName ?? undefined,
 
-    latitude: data.latitude ?? undefined,
-    longitude: data.longitude ?? undefined,
+      preferredTenant: data.preferredTenant ?? undefined,
+      preferredGuests: data.preferredGuests ?? undefined,
 
-    propertyName: data.propertyName ?? undefined,
-    gender: data.gender ?? undefined,
+      city: data.city ?? "Chennai",          // 🔥 FIX
+      locality: data.locality ?? "Unknown",  // 🔥 FIX
 
-    roomType: data.roomType ?? undefined,
-    sharingType: data.sharingType ?? undefined,
+      availableFrom: data.availableFrom
+        ? new Date(data.availableFrom)
+        : undefined,
 
-    rent: data.rent ?? undefined,
-    deposit: data.deposit ?? undefined,
-    rentNegotiable: data.rentNegotiable ?? undefined,
-    depositNegotiable: data.depositNegotiable ?? undefined,
+      noticePeriod: data.noticePeriod ?? undefined,
 
-    foodIncluded: data.foodIncluded ?? undefined,
-    foodType: data.foodType ?? undefined,
+      gateClosingTime: data.gateClosingTime
+        ? new Date(`1970-01-01T${data.gateClosingTime}:00`)
+        : undefined,
 
-    pgAmenities: data.pgAmenities ?? undefined,
-    restrictions: data.restrictions ?? undefined,
-
-    preferredTenant: data.preferredTenant ?? undefined,
-    preferredGuests: data.preferredGuests ?? undefined,
-
-    parking: data.parking ?? undefined,
-
-    availableFrom: data.availableFrom
-      ? new Date(data.availableFrom)
-      : undefined,
-
-    noticePeriod: data.noticePeriod ?? undefined,
-
-    gateClosingTime: data.gateClosingTime
-      ? new Date(`1970-01-01T${data.gateClosingTime}:00`)
-      : undefined,
-
-    currentStep: 2,
-  },
-});
+      currentStep: 2,
+    },
+  });
 }
 
   /*
