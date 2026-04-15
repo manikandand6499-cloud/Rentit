@@ -59,9 +59,9 @@ export class CreateDetailsDto {
   longitude?: number;
 
   // 🛏 ROOM
-  @IsOptional()
-  @IsObject()
-  roomType?: any;
+ @IsOptional()
+@IsArray()
+roomType?: any[];
 
   @IsOptional()
   @IsObject()
