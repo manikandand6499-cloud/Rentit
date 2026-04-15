@@ -134,25 +134,7 @@ export class PropertyService {
   });
 }
 
-  /*
-  ============================
-  STEP 4 — PRICE
-  ============================
-  */
-  async updatePrice(id: number, userId: number, data: CreatePriceDto) {
-    await this.checkPropertyOwner(id, userId);
-
-    return this.prisma.property.update({
-      where: { id },
-      data: {
-        rent: data.rent ?? undefined,
-        deposit: data.deposit ?? undefined,
-      
-        currentStep: 4,
-      },
-    });
-  }
-
+ 
   async updateLocation(id: number, userId: number, data: UpdateLocationDto) {
     await this.checkPropertyOwner(id, userId);
 
@@ -161,7 +143,7 @@ export class PropertyService {
       data: {
         latitude: data.latitude,
         longitude: data.longitude,
-        currentStep: 6,
+        currentStep: 4,
       },
     });
   }
@@ -178,7 +160,7 @@ export class PropertyService {
       where: { id },
       data: {
         images,
-        currentStep: 7,
+        currentStep: 5,
       },
     });
   }
@@ -208,7 +190,7 @@ export class PropertyService {
     whatsapp: data.whatsapp ?? undefined,
     whatsappupdates: data.whatsappupdates ?? undefined,
 
-    currentStep: 8,
+    currentStep: 6,
     isDraft: false,
   },
 });
