@@ -92,8 +92,8 @@ roomType?: any[];
   foodIncluded?: boolean;
 
   @IsOptional()
-  @IsBoolean()
-  parking?: boolean;
+@IsString()
+parking?: string;
 
   @IsOptional()
   @IsObject()

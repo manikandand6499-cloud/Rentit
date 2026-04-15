@@ -9,8 +9,8 @@ export class CreateAmenitiesDto {
 
   // 🚗 PARKING
   @IsOptional()
-  @IsBoolean()
-  parking?: boolean;
+@IsString()
+parking?: string;
 
   // 🍱 FOOD TYPE (JSON)
   @IsOptional()
