@@ -89,8 +89,13 @@ async updatePgRentDetails(
     where: { id },
     data: {
       pgrentdetails: data.pgrentdetails?.length
-        ? data.pgrentdetails
-        : undefined,
+  ? data.pgrentdetails.map(room => ({
+      sharing: room.sharing,
+      rent: room.rent,
+      deposit: room.deposit,
+      amenities: room.amenities,
+    }))
+  : undefined,
       currentStep: 3,
     },
   });
