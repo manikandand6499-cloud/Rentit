@@ -14,15 +14,9 @@ class RoomDto {
   @IsString()
   sharing?: string;
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  rent?: number;
+  
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  deposit?: number;
+
 
   @IsOptional()
   @IsArray()
@@ -69,8 +63,7 @@ export class CreateDetailsDto {
   @IsOptional() @IsString()
   propertyName?: string;
 
-  @IsOptional() @IsString()
-  gender?: string;
+
 
   /// PREFERENCES
   @IsOptional() @IsArray() @IsString({ each: true })
@@ -105,19 +98,11 @@ export class CreateDetailsDto {
   @Type(() => RoomDto)
   roomType?: RoomDto[];
 
-  /// PRICING
-  @IsOptional() @Type(() => Number) @IsNumber()
-  rent?: number;
+  
 
-  @IsOptional() @Type(() => Number) @IsNumber()
-  deposit?: number;
 
-  @IsOptional() @IsBoolean()
-  rentNegotiable?: boolean;
 
-  @IsOptional() @IsBoolean()
-  depositNegotiable?: boolean;
-
+  
   /// FOOD
   @IsOptional() @IsBoolean()
   foodIncluded?: boolean;

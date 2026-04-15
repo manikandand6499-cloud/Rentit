@@ -37,23 +37,8 @@ export class CreatePriceDto {
   @IsBoolean()
   maintenanceExtra?: boolean;
 
-  /*
-  ==============================
-  RENT NEGOTIABLE
-  ==============================
-  */
-  @IsOptional()
-  @IsBoolean()
-  rentNegotiable?: boolean;
 
-  /*
-  ==============================
-  DEPOSIT NEGOTIABLE
-  ==============================
-  */
-  @IsOptional()
-  @IsBoolean()
-  depositNegotiable?: boolean;
+
 
   /*
   ==============================

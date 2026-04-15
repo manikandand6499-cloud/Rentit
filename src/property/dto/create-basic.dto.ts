@@ -17,9 +17,7 @@ export class CreateBasicDto {
   @IsString()
   locality?: string; // 🔥 ADD THIS (REQUIRED in DB)
 
-  @IsOptional()
-  @IsString()
-  gender?: string;
-
   
+
+
 }
