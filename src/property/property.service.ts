@@ -43,43 +43,59 @@ export class PropertyService {
   STEP 2 — DETAILS
   ============================
   */
-  async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
+ async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
   await this.checkPropertyOwner(id, userId);
 
   return this.prisma.property.update({
     where: { id },
     data: {
+      /// 📍 LOCATION
       city: data.city ?? undefined,
       street: data.street ?? undefined,
       locality: data.locality ?? undefined,
       landmark: data.landmark ?? undefined,
       latitude: data.latitude ?? undefined,
       longitude: data.longitude ?? undefined,
-      
+
+      /// 🏠 BASIC
       propertyName: data.propertyName ?? undefined,
       gender: data.gender ?? undefined,
-       preferredGuests: data.preferredGuests ?? undefined,
-        preferredTenant: data.preferredTenant ?? undefined,
-      roomType: data.roomType ?? undefined,
-      sharingType: data.sharingType ?? undefined,
 
+      /// 👥 PREFERENCES
+      preferredGuests: data.preferredGuests ?? undefined,
+      preferredTenant: data.preferredTenant ?? undefined,
+
+      /// 🛏 ROOM (🔥 FIXED)
+      roomType: data.roomType
+        ? JSON.parse(JSON.stringify(data.roomType))
+        : undefined,
+
+      /// 💰 PRICING
       rent: data.rent ?? undefined,
       deposit: data.deposit ?? undefined,
       rentNegotiable: data.rentNegotiable ?? undefined,
       depositNegotiable: data.depositNegotiable ?? undefined,
 
+      /// 🍽 FOOD (🔥 FIXED)
       foodIncluded: data.foodIncluded ?? undefined,
-      foodType: data.foodType ?? undefined,
+      foodType: data.foodType
+        ? JSON.parse(JSON.stringify(data.foodType))
+        : undefined,
 
+      /// 🚗 PARKING
       parking: data.parking ?? undefined,
 
-      /// ✅ ONLY THIS (IMPORTANT)
-      pgAmenities: data.pgAmenities ?? undefined,
+      /// 🏠 AMENITIES (🔥 FIXED)
+      pgAmenities: data.pgAmenities
+        ? JSON.parse(JSON.stringify(data.pgAmenities))
+        : undefined,
 
-      restrictions: data.restrictions ?? undefined,
+      /// 🚫 RESTRICTIONS (🔥 FIXED)
+      restrictions: data.restrictions
+        ? JSON.parse(JSON.stringify(data.restrictions))
+        : undefined,
 
-     
-
+      /// ⏰ AVAILABILITY
       availableFrom: data.availableFrom
         ? new Date(data.availableFrom)
         : undefined,
