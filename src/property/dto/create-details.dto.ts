@@ -5,69 +5,15 @@ import {
   IsDateString,
   IsArray,
   IsBoolean,
-  IsObject,
+  ValidateNested,
 } from "class-validator";
 import { Type } from "class-transformer";
 
-export class CreateDetailsDto {
-
-  // 🏠 BASIC
+class RoomDto {
   @IsOptional()
   @IsString()
-  propertyName?: string;
+  sharing?: string;
 
-  @IsOptional()
-  @IsString()
-  gender?: string;
-
-  // 👥 PREFERENCES
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  preferredTenant?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  preferredGuests?: string[];
-
-  // 📍 LOCATION
-  @IsOptional()
-  @IsString()
-  city?: string;
-
-  @IsOptional()
-  @IsString()
-  street?: string;
-
-  @IsOptional()
-  @IsString()
-  locality?: string;
-
-  @IsOptional()
-  @IsString()
-  landmark?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  latitude?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  longitude?: number;
-
-  // 🛏 ROOM
- @IsOptional()
-@IsArray()
-roomType?: any[];
-
-  @IsOptional()
-  @IsObject()
-  sharingType?: any;
-
-  // 💰 PRICING
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
@@ -79,45 +25,131 @@ roomType?: any[];
   deposit?: number;
 
   @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  amenities?: string[];
+}
+
+class FoodTypeDto {
+  @IsOptional()
   @IsBoolean()
+  breakfast?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  lunch?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  dinner?: boolean;
+}
+
+class AmenitiesDto {
+  @IsOptional() @IsBoolean() laundry?: boolean;
+  @IsOptional() @IsBoolean() roomCleaning?: boolean;
+  @IsOptional() @IsBoolean() wifi?: boolean;
+  @IsOptional() @IsBoolean() commonTV?: boolean;
+  @IsOptional() @IsBoolean() lift?: boolean;
+  @IsOptional() @IsBoolean() powerBackup?: boolean;
+  @IsOptional() @IsBoolean() refrigerator?: boolean;
+  @IsOptional() @IsBoolean() mess?: boolean;
+}
+
+class RestrictionsDto {
+  @IsOptional() @IsBoolean() smoking?: boolean;
+  @IsOptional() @IsBoolean() drinking?: boolean;
+  @IsOptional() @IsBoolean() loudMusic?: boolean;
+  @IsOptional() @IsBoolean() nonVegAllowed?: boolean;
+  @IsOptional() @IsBoolean() girlsEntry?: boolean;
+}
+
+export class CreateDetailsDto {
+
+  /// BASIC
+  @IsOptional() @IsString()
+  propertyName?: string;
+
+  @IsOptional() @IsString()
+  gender?: string;
+
+  /// PREFERENCES
+  @IsOptional() @IsArray() @IsString({ each: true })
+  preferredTenant?: string[];
+
+  @IsOptional() @IsArray() @IsString({ each: true })
+  preferredGuests?: string[];
+
+  /// LOCATION
+  @IsOptional() @IsString()
+  city?: string;
+
+  @IsOptional() @IsString()
+  street?: string;
+
+  @IsOptional() @IsString()
+  locality?: string;
+
+  @IsOptional() @IsString()
+  landmark?: string;
+
+  @IsOptional() @Type(() => Number) @IsNumber()
+  latitude?: number;
+
+  @IsOptional() @Type(() => Number) @IsNumber()
+  longitude?: number;
+
+  /// ROOM
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => RoomDto)
+  roomType?: RoomDto[];
+
+  /// PRICING
+  @IsOptional() @Type(() => Number) @IsNumber()
+  rent?: number;
+
+  @IsOptional() @Type(() => Number) @IsNumber()
+  deposit?: number;
+
+  @IsOptional() @IsBoolean()
   rentNegotiable?: boolean;
 
-  @IsOptional()
-  @IsBoolean()
+  @IsOptional() @IsBoolean()
   depositNegotiable?: boolean;
 
-  // 🍽 FACILITIES
-  @IsOptional()
-  @IsBoolean()
+  /// FOOD
+  @IsOptional() @IsBoolean()
   foodIncluded?: boolean;
 
   @IsOptional()
-@IsString()
-parking?: string;
+  @ValidateNested()
+  @Type(() => FoodTypeDto)
+  foodType?: FoodTypeDto;
 
-  @IsOptional()
-  @IsObject()
-  foodType?: any;
+  /// PARKING
+  @IsOptional() @IsString()
+  parking?: string;
 
+  /// AMENITIES
   @IsOptional()
-  @IsObject()
-  pgAmenities?: any;
+  @ValidateNested()
+  @Type(() => AmenitiesDto)
+  pgAmenities?: AmenitiesDto;
 
+  /// RESTRICTIONS
   @IsOptional()
-  @IsObject()
-  restrictions?: any;
+  @ValidateNested()
+  @Type(() => RestrictionsDto)
+  restrictions?: RestrictionsDto;
 
-  // ⏰ AVAILABILITY
-  @IsOptional()
-  @IsDateString()
+  /// AVAILABILITY
+  @IsOptional() @IsDateString()
   availableFrom?: string;
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
+  @IsOptional() @Type(() => Number) @IsNumber()
   noticePeriod?: number;
 
-  @IsOptional()
-  @IsString()
+  @IsOptional() @IsString()
   gateClosingTime?: string;
 }

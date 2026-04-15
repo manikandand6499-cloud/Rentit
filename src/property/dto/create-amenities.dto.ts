@@ -34,13 +34,13 @@ parking?: string;
   // 🚫 RULES (JSON)
   @IsOptional()
   @IsObject()
-  restrictions?: {
-    smoking?: boolean;
-    drinking?: boolean;
-    loudMusic?: boolean;
-    nonVeg?: boolean;
-    guestsAllowed?: boolean;
-  };
+ restrictions?: {
+  smoking?: boolean;
+  drinking?: boolean;
+  loudMusic?: boolean;
+  nonVegAllowed?: boolean;
+  girlsEntry?: boolean;
+};
 
   // 📝 DESCRIPTION
   @IsOptional()
