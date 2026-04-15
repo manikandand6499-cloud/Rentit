@@ -88,13 +88,21 @@ async updatePgRentDetails(
   return this.prisma.property.update({
     where: { id },
     data: {
-      pgrentdetails: data.pgrentdetails?.length
-  ? data.pgrentdetails.map(room => ({
-      sharing: room.sharing,
-      rent: room.rent,
-      deposit: room.deposit,
-      amenities: room.amenities,
-    }))
+   pgrentdetails: data.pgrentdetails?.length
+  ? data.pgrentdetails
+      .filter(room =>
+        room.sharing &&
+        room.rent !== undefined &&
+        room.deposit !== undefined &&
+        room.rent > 0 &&
+        room.deposit > 0
+      )
+      .map(room => ({
+        sharing: room.sharing,
+        rent: room.rent ?? 0,
+        deposit: room.deposit ?? 0,
+        amenities: room.amenities ?? [],
+      }))
   : undefined,
       currentStep: 3,
     },
