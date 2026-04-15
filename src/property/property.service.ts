@@ -119,7 +119,7 @@ export class PropertyService {
 
       propertyDescription: data.propertyDescription ?? undefined,
 
-      currentStep: 4,
+      currentStep: 3,
     },
   });
 }
@@ -152,7 +152,7 @@ export class PropertyService {
       data: {
         latitude: data.latitude,
         longitude: data.longitude,
-        currentStep: 1,
+        currentStep: 6,
       },
     });
   }
@@ -169,7 +169,7 @@ export class PropertyService {
       where: { id },
       data: {
         images,
-        currentStep: 5,
+        currentStep: 7,
       },
     });
   }
@@ -199,7 +199,7 @@ export class PropertyService {
     whatsapp: data.whatsapp ?? undefined,
     whatsappupdates: data.whatsappupdates ?? undefined,
 
-    currentStep: 7,
+    currentStep: 8,
     isDraft: false,
   },
 });
@@ -216,7 +216,7 @@ export class PropertyService {
     return this.prisma.property.update({
       where: { id },
       data: {
-        currentStep: 7,
+        currentStep: 9,
         isDraft: false,
       },
     });
