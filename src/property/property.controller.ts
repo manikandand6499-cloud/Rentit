@@ -76,7 +76,7 @@ export class PropertyController {
   STEP 3 - PgRentDetails
   ==============================
   */
- @Put(':id/pgrentdetails')
+@Put(':id/pgrentdetails')
 updatePgRentDetails(
   @Param('id') id: string,
   @Req() req,
@@ -84,7 +84,7 @@ updatePgRentDetails(
 ) {
   return this.propertyService.updatePgRentDetails(
     Number(id),
-    req.user.id, // 🔥 FIX
+    req.user.userId, // ✅ FIXED
     dto,
   );
 }

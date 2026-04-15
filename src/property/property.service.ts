@@ -78,7 +78,7 @@ export class PropertyService {
   STEP 3 — PgRentDetails
   ============================
   */
- async updatePgRentDetails(
+async updatePgRentDetails(
   id: number,
   userId: number,
   data: CreatePgRentDetailsDto,
@@ -88,7 +88,9 @@ export class PropertyService {
   return this.prisma.property.update({
     where: { id },
     data: {
-      pgrentdetails: data.pgrentdetails ?? [],
+      pgrentdetails: data.pgrentdetails?.length
+        ? data.pgrentdetails
+        : undefined,
       currentStep: 3,
     },
   });
