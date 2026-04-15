@@ -20,4 +20,6 @@ export class CreateBasicDto {
   @IsOptional()
   @IsString()
   gender?: string;
+
+  
 }

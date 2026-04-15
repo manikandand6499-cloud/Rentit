@@ -26,6 +26,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateLocationDto } from './dto/location.dto';
 
 import { uploadToR2 } from 'src/common/s3.upload';
+import { CreatePgRentDetailsDto } from './dto/create-pgrentdetails.dto';
 
 @Controller('property')
 @UseGuards(JwtAuthGuard)
@@ -72,17 +73,21 @@ export class PropertyController {
 
   /*
   ==============================
-  STEP 3 - AMENITIES
+  STEP 3 - PgRentDetails
   ==============================
   */
-  @Put(':id/amenities')
-  updateAmenities(@Param('id') id: string, @Req() req, @Body() dto: CreateAmenitiesDto) {
-    return this.propertyService.updateAmenities(
-      Number(id),
-      req.user.userId,
-      dto,
-    );
-  }
+ @Put(':id/pgrentdetails')
+updatePgRentDetails(
+  @Param('id') id: string,
+  @Req() req,
+  @Body() dto: CreatePgRentDetailsDto,
+) {
+  return this.propertyService.updatePgRentDetails(
+    Number(id),
+    req.user.id, // 🔥 FIX
+    dto,
+  );
+}
 
   /*
   ==============================

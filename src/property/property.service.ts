@@ -14,6 +14,7 @@ import { UpdateLocationDto } from './dto/location.dto';
 import { UpdateAvailabilityDto } from './dto/availability.dto';
 import { CreateAdditionalDto } from './dto/create-additional.dto';
 import { CreateAdditionalDetailsDto } from './dto/create-residential-additional-details.dto';
+import { CreatePgRentDetailsDto } from './dto/create-pgrentdetails.dto';
 
 @Injectable()
 export class PropertyService {
@@ -74,33 +75,24 @@ export class PropertyService {
 
   /*
   ============================
-  STEP 3 — AMENITIES
+  STEP 3 — PgRentDetails
   ============================
   */
-  async updateAmenities(id: number, userId: number, data: CreateAmenitiesDto) {
+ async updatePgRentDetails(
+  id: number,
+  userId: number,
+  data: CreatePgRentDetailsDto,
+) {
   await this.checkPropertyOwner(id, userId);
 
   return this.prisma.property.update({
     where: { id },
     data: {
-      foodIncluded: data.foodIncluded ?? undefined,
-      foodType: data.foodType ?? undefined,
-
-      parking: data.parking ?? undefined,
-
-      /// ✅ MAIN FIELD
-      pgAmenities: data.pgAmenities ?? undefined,
-
-          restrictions: data.restrictions ?? undefined,
-
-
-      propertyDescription: data.propertyDescription ?? undefined,
-
-      currentStep: 4,
+      pgrentdetails: data.pgrentdetails ?? [],
+      currentStep: 3,
     },
   });
 }
-
   /*
   ============================
   STEP 4 — PRICE
