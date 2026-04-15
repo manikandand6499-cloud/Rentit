@@ -14,7 +14,6 @@ import { UpdateLocationDto } from './dto/location.dto';
 import { UpdateAvailabilityDto } from './dto/availability.dto';
 import { CreateAdditionalDto } from './dto/create-additional.dto';
 import { CreateAdditionalDetailsDto } from './dto/create-residential-additional-details.dto';
-import { CreatePgRentDetailsDto } from './dto/create-pgrentdetails.dto';
 
 @Injectable()
 export class PropertyService {
@@ -44,19 +43,42 @@ export class PropertyService {
   STEP 2 — DETAILS
   ============================
   */
- async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
+  async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
   await this.checkPropertyOwner(id, userId);
 
   return this.prisma.property.update({
     where: { id },
     data: {
+      city: data.city ?? undefined,
+      street: data.street ?? undefined,
+      locality: data.locality ?? undefined,
+      landmark: data.landmark ?? undefined,
+      latitude: data.latitude ?? undefined,
+      longitude: data.longitude ?? undefined,
+      
       propertyName: data.propertyName ?? undefined,
+      gender: data.gender ?? undefined,
+       preferredGuests: data.preferredGuests ?? undefined,
+        preferredTenant: data.preferredTenant ?? undefined,
+      roomType: data.roomType ?? undefined,
+      sharingType: data.sharingType ?? undefined,
 
-      preferredTenant: data.preferredTenant ?? undefined,
-      preferredGuests: data.preferredGuests ?? undefined,
+      rent: data.rent ?? undefined,
+      deposit: data.deposit ?? undefined,
+      rentNegotiable: data.rentNegotiable ?? undefined,
+      depositNegotiable: data.depositNegotiable ?? undefined,
 
-      city: data.city ?? "Chennai",          // 🔥 FIX
-      locality: data.locality ?? "Unknown",  // 🔥 FIX
+      foodIncluded: data.foodIncluded ?? undefined,
+      foodType: data.foodType ?? undefined,
+
+      parking: data.parking ?? undefined,
+
+      /// ✅ ONLY THIS (IMPORTANT)
+      pgAmenities: data.pgAmenities ?? undefined,
+
+      restrictions: data.restrictions ?? undefined,
+
+     
 
       availableFrom: data.availableFrom
         ? new Date(data.availableFrom)
@@ -75,39 +97,33 @@ export class PropertyService {
 
   /*
   ============================
-  STEP 3 — PgRentDetails
+  STEP 3 — AMENITIES
   ============================
   */
-async updatePgRentDetails(
-  id: number,
-  userId: number,
-  data: CreatePgRentDetailsDto,
-) {
+  async updateAmenities(id: number, userId: number, data: CreateAmenitiesDto) {
   await this.checkPropertyOwner(id, userId);
 
   return this.prisma.property.update({
     where: { id },
     data: {
-   pgrentdetails: data.pgrentdetails?.length
-  ? data.pgrentdetails
-      .filter(room =>
-        room.sharing &&
-        room.rent !== undefined &&
-        room.deposit !== undefined &&
-        room.rent > 0 &&
-        room.deposit > 0
-      )
-      .map(room => ({
-        sharing: room.sharing,
-        rent: room.rent ?? 0,
-        deposit: room.deposit ?? 0,
-        amenities: room.amenities ?? [],
-      }))
-  : undefined,
-      currentStep: 3,
+      foodIncluded: data.foodIncluded ?? undefined,
+      foodType: data.foodType ?? undefined,
+
+      parking: data.parking ?? undefined,
+
+      /// ✅ MAIN FIELD
+      pgAmenities: data.pgAmenities ?? undefined,
+
+          restrictions: data.restrictions ?? undefined,
+
+
+      propertyDescription: data.propertyDescription ?? undefined,
+
+      currentStep: 4,
     },
   });
 }
+
   /*
   ============================
   STEP 4 — PRICE
@@ -218,28 +234,12 @@ async updatePgRentDetails(
     });
   }
 
- async getMyProperties(userId: number) {
-  if (!userId) throw new Error("Unauthorized");
-
-  const properties = await this.prisma.property.findMany({
-    where: {
-      userId,
-      isDeleted: false,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  return properties.map(p => ({
-    ...p,
-    roomType: Array.isArray(p.roomType)
-      ? p.roomType
-      : p.roomType
-      ? [p.roomType]
-      : [],
-  }));
-}
+  async getMyProperties(userId: number) {
+    return this.prisma.property.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    });
+  }
 
   async getProperty(id: number) {
     const property = await this.prisma.property.findUnique({

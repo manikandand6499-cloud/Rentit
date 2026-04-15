@@ -87,17 +87,16 @@ model Property {
 
   // 🏠 PROPERTY INFO
   propertyName String?
-  propertyType String   // PG / Hostel / Apartment
-  gender       String?  // Boys / Girls / Co-living
+  propertyType String
+  gender       String?
 
-  // 🛏 ROOM DETAILS (optional structure)
-  roomType    Json?     // [{sharing, rent, deposit, amenities}]
-  sharingType Json?     // optional
+  // 🛏 ROOM DETAILS
+  roomType    Json?
+  sharingType Json?
   noOfRooms   Int?
   noOfBeds    Int?
-  pgrentdetails Json?
 
-  // 💰 PRICING (optional overall)
+  // 💰 PRICING
   rent              Float?
   deposit           Float?
   depositNegotiable Boolean?
@@ -107,21 +106,11 @@ model Property {
   foodIncluded Boolean?
   foodType     Json?
 
-  // 🔥 ALL AMENITIES (single source)
-  pgAmenities Json?
+  /// ✅ ALL amenities in ONE place
+  pgAmenities  Json?
 
-  // 🚗 PARKING
+  /// ✅ FIXED (boolean correct)
   parking Boolean?
-
-  // 🏢 RULES (clean JSON)
-  restrictions Json?
-
-  // 📝 DESCRIPTION
-  propertyDescription String?
-
-  // 👥 PREFERENCES
-  preferredTenant Json?   // ["Boys", "Girls"]
-  preferredGuests Json?   // ["Immediate", "Later"]
 
   // ⏰ AVAILABILITY
   availableFrom   DateTime?
@@ -137,6 +126,14 @@ model Property {
   mobileNo        String?
   whatsapp        Boolean?
   whatsappupdates Boolean?
+
+  // 👥 PREFERENCES
+  preferredTenant Json?
+  preferredGuests Json?
+
+  // 🔒 OTHER
+  restrictions        Json?
+  propertyDescription String?
 
   // ⚙️ SYSTEM
   currentStep Int      @default(1)
