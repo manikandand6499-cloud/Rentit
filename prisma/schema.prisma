@@ -88,25 +88,14 @@ model Property {
   // 🏠 PROPERTY INFO
   propertyName String?
   propertyType String
-  gender       String?
 
   // 🛏 ROOM DETAILS
-  roomType    Json?
-  sharingType Json?
-  noOfRooms   Int?
-  noOfBeds    Int?
-
-  // 💰 PRICING
-  rent              Float?
-  deposit           Float?
-  depositNegotiable Boolean?
-  rentNegotiable    Boolean?
+  roomType Json?
 
   // 🍽 FACILITIES
   foodIncluded Boolean?
   foodType     Json?
 
-  /// ✅ ALL amenities in ONE place
   pgAmenities  Json?
 
   parking String?
