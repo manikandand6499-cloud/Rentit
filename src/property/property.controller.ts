@@ -19,7 +19,7 @@ import { PropertyService } from './property.service';
 import { CreateBasicDto } from './dto/create-basic.dto';
 import { CreateDetailsDto } from './dto/create-details.dto';
 import { CreateAmenitiesDto } from './dto/create-amenities.dto';
-import { CreatePriceDto } from './dto/create-price.dto';
+// import { CreatePriceDto } from './dto/create-price.dto';
 import { CreateContactDto } from './dto/create-contact.dto';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -78,20 +78,6 @@ export class PropertyController {
   @Put(':id/amenities')
   updateAmenities(@Param('id') id: string, @Req() req, @Body() dto: CreateAmenitiesDto) {
     return this.propertyService.updateAmenities(
-      Number(id),
-      req.user.userId,
-      dto,
-    );
-  }
-
-  /*
-  ==============================
-  STEP 4 - PRICE
-  ==============================
-  */
-  @Put(':id/price')
-  updatePrice(@Param('id') id: string, @Req() req, @Body() dto: CreatePriceDto) {
-    return this.propertyService.updatePrice(
       Number(id),
       req.user.userId,
       dto,

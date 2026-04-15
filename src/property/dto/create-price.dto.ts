@@ -1,92 +1,92 @@
-import {
-  IsOptional,
-  IsNumber,
-  IsBoolean,
-  IsString,
-  IsArray
-} from 'class-validator';
+// import {
+//   IsOptional,
+//   IsNumber,
+//   IsBoolean,
+//   IsString,
+//   IsArray
+// } from 'class-validator';
 
-import { Type } from 'class-transformer';
+// import { Type } from 'class-transformer';
 
-export class CreatePriceDto {
+// export class CreatePriceDto {
 
-  /*
-  ==============================
-  EXPECTED RENT
-  ==============================
-  */
-  @Type(() => Number)
-  @IsNumber()
-  rent: number | undefined;
+//   /*
+//   ==============================
+//   EXPECTED RENT
+//   ==============================
+//   */
+//   @Type(() => Number)
+//   @IsNumber()
+//   rent: number | undefined;
 
-  /*
-  ==============================
-  DEPOSIT
-  ==============================
-  */
-  @Type(() => Number)
-  @IsNumber()
-  deposit: number | undefined;
+//   /*
+//   ==============================
+//   DEPOSIT
+//   ==============================
+//   */
+//   @Type(() => Number)
+//   @IsNumber()
+//   deposit: number | undefined;
 
-  /*
-  ==============================
-  MAINTENANCE EXTRA
-  ==============================
-  */
-  @IsOptional()
-  @IsBoolean()
-  maintenanceExtra?: boolean;
-
-
+//   /*
+//   ==============================
+//   MAINTENANCE EXTRA
+//   ==============================
+//   */
+//   @IsOptional()
+//   @IsBoolean()
+//   maintenanceExtra?: boolean;
 
 
-  /*
-  ==============================
-  LEASE DURATION
-  ==============================
-  */
-  @IsOptional()
-  @IsString()
-  leaseDuration?: string;
 
-  @IsOptional()
-  @IsString()
-maintenanceAmount?: number;
-  /*
-  ==============================
-  LOCKIN PERIOD
-  ==============================
-  */
-  @IsOptional()
-  @IsString()
-  lockinPeriod?: string;
 
-  /*
-  ==============================
-  AVAILABLE FROM
-  ==============================
-  */
-  @IsOptional()
-  @IsString()
-  availableFrom?: string;
+//   /*
+//   ==============================
+//   LEASE DURATION
+//   ==============================
+//   */
+//   @IsOptional()
+//   @IsString()
+//   leaseDuration?: string;
 
-  /*
-  ==============================
-  IDEAL FOR
-  ==============================
-  */
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  idealFor?: string[];
+//   @IsOptional()
+//   @IsString()
+// maintenanceAmount?: number;
+//   /*
+//   ==============================
+//   LOCKIN PERIOD
+//   ==============================
+//   */
+//   @IsOptional()
+//   @IsString()
+//   lockinPeriod?: string;
 
-  /*
-  ==============================
-  TAGS
-  ==============================
-  */
-  @IsOptional()
-  @IsString()
-  addOthertags?: string;
-  rentType: any;
-}
+//   /*
+//   ==============================
+//   AVAILABLE FROM
+//   ==============================
+//   */
+//   @IsOptional()
+//   @IsString()
+//   availableFrom?: string;
+
+//   /*
+//   ==============================
+//   IDEAL FOR
+//   ==============================
+//   */
+//   @IsOptional()
+//   @IsArray()
+//   @IsString({ each: true })
+//   idealFor?: string[];
+
+//   /*
+//   ==============================
+//   TAGS
+//   ==============================
+//   */
+//   @IsOptional()
+//   @IsString()
+//   addOthertags?: string;
+//   rentType: any;
+// }

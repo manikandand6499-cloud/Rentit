@@ -8,7 +8,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateBasicDto } from './dto/create-basic.dto';
 import { CreateDetailsDto } from './dto/create-details.dto';
 import { CreateAmenitiesDto } from './dto/create-amenities.dto';
-import { CreatePriceDto } from './dto/create-price.dto';
+// import { CreatePriceDto } from './dto/create-price.dto';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateLocationDto } from './dto/location.dto';
 import { UpdateAvailabilityDto } from './dto/availability.dto';
