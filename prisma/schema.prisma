@@ -94,6 +94,7 @@ model Property {
   sharingType Json?     // optional
   noOfRooms   Int?
   noOfBeds    Int?
+  pgrentdetails Json?
 
   // 💰 PRICING (optional overall)
   rent              Float?
