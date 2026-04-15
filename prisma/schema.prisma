@@ -109,8 +109,7 @@ model Property {
   /// ✅ ALL amenities in ONE place
   pgAmenities  Json?
 
-  /// ✅ FIXED (boolean correct)
-  parking Boolean?
+  parking String?
 
   // ⏰ AVAILABILITY
   availableFrom   DateTime?
