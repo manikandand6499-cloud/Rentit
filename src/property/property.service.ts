@@ -46,53 +46,52 @@ export class PropertyService {
   async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
   await this.checkPropertyOwner(id, userId);
 
-  return this.prisma.property.update({
-    where: { id },
-    data: {
-      city: data.city ?? undefined,
-      street: data.street ?? undefined,
-      locality: data.locality ?? undefined,
-      landmark: data.landmark ?? undefined,
-      latitude: data.latitude ?? undefined,
-      longitude: data.longitude ?? undefined,
-      
-      propertyName: data.propertyName ?? undefined,
-      gender: data.gender ?? undefined,
-       preferredGuests: data.preferredGuests ?? undefined,
-        preferredTenant: data.preferredTenant ?? undefined,
-      roomType: data.roomType ?? undefined,
-      sharingType: data.sharingType ?? undefined,
+ return this.prisma.property.update({
+  where: { id },
+  data: {
+    city: data.city ?? undefined,
+    locality: data.locality ?? undefined,
+    street: data.street ?? undefined,
+    landmark: data.landmark ?? undefined,
 
-      rent: data.rent ?? undefined,
-      deposit: data.deposit ?? undefined,
-      rentNegotiable: data.rentNegotiable ?? undefined,
-      depositNegotiable: data.depositNegotiable ?? undefined,
+    latitude: data.latitude ?? undefined,
+    longitude: data.longitude ?? undefined,
 
-      foodIncluded: data.foodIncluded ?? undefined,
-      foodType: data.foodType ?? undefined,
+    propertyName: data.propertyName ?? undefined,
+    gender: data.gender ?? undefined,
 
-      parking: data.parking ?? undefined,
+    roomType: data.roomType ?? undefined,
+    sharingType: data.sharingType ?? undefined,
 
-      /// ✅ ONLY THIS (IMPORTANT)
-      pgAmenities: data.pgAmenities ?? undefined,
+    rent: data.rent ?? undefined,
+    deposit: data.deposit ?? undefined,
+    rentNegotiable: data.rentNegotiable ?? undefined,
+    depositNegotiable: data.depositNegotiable ?? undefined,
 
-      restrictions: data.restrictions ?? undefined,
+    foodIncluded: data.foodIncluded ?? undefined,
+    foodType: data.foodType ?? undefined,
 
-     
+    pgAmenities: data.pgAmenities ?? undefined,
+    restrictions: data.restrictions ?? undefined,
 
-      availableFrom: data.availableFrom
-        ? new Date(data.availableFrom)
-        : undefined,
+    preferredTenant: data.preferredTenant ?? undefined,
+    preferredGuests: data.preferredGuests ?? undefined,
 
-      noticePeriod: data.noticePeriod ?? undefined,
+    parking: data.parking ?? undefined,
 
-      gateClosingTime: data.gateClosingTime
-        ? new Date(`1970-01-01T${data.gateClosingTime}:00`)
-        : undefined,
+    availableFrom: data.availableFrom
+      ? new Date(data.availableFrom)
+      : undefined,
 
-      currentStep: 2,
-    },
-  });
+    noticePeriod: data.noticePeriod ?? undefined,
+
+    gateClosingTime: data.gateClosingTime
+      ? new Date(`1970-01-01T${data.gateClosingTime}:00`)
+      : undefined,
+
+    currentStep: 2,
+  },
+});
 }
 
   /*
@@ -234,12 +233,28 @@ export class PropertyService {
     });
   }
 
-  async getMyProperties(userId: number) {
-    return this.prisma.property.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-    });
-  }
+ async getMyProperties(userId: number) {
+  if (!userId) throw new Error("Unauthorized");
+
+  const properties = await this.prisma.property.findMany({
+    where: {
+      userId,
+      isDeleted: false,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return properties.map(p => ({
+    ...p,
+    roomType: Array.isArray(p.roomType)
+      ? p.roomType
+      : p.roomType
+      ? [p.roomType]
+      : [],
+  }));
+}
 
   async getProperty(id: number) {
     const property = await this.prisma.property.findUnique({
