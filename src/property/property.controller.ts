@@ -47,6 +47,7 @@ export class PropertyController {
   STEP 1 - LOCATION
   ==============================
   */
+
   @Put('location/:id')
   updateLocation(@Param('id') id: string, @Req() req, @Body() dto: UpdateLocationDto) {
     return this.propertyService.updateLocation(
@@ -117,21 +118,30 @@ export class PropertyController {
   STEP 5 - VIDEO (R2)
   ==============================
   */
-  @Post(':id/upload-video')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadVideo(
-    @Param('id') id: string,
-    @Req() req,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    const url = await uploadToR2(file);
-
-    return this.propertyService.saveVideo(
-      Number(id),
-      req.user.userId,
-      url,
-    );
+ @UseInterceptors(FileInterceptor('file'))
+@Post(':id/upload-video')
+@UseInterceptors(
+  FileInterceptor('file', {
+    limits: { fileSize: 100 * 1024 * 1024 }, // 🔥 100MB
+  }),
+)
+async uploadVideo(
+  @Param('id') id: string,
+  @Req() req,
+  @UploadedFile() file: Express.Multer.File,
+) {
+  if (!file) {
+    throw new Error("No video file received"); // 🔥 debug safety
   }
+
+  const url = await uploadToR2(file);
+
+  return this.propertyService.saveVideo(
+    Number(id),
+    req.user.userId,
+    url,
+  );
+}
 
   /*
   ==============================
