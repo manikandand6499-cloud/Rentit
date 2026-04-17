@@ -122,7 +122,7 @@ export class PropertyController {
 @Post(':id/upload-video')
 @UseInterceptors(
   FileInterceptor('file', {
-    limits: { fileSize: 100 * 1024 * 1024 }, // 🔥 100MB
+    limits: { fileSize: 100 * 1024 * 1024 },
   }),
 )
 async uploadVideo(
@@ -130,8 +130,10 @@ async uploadVideo(
   @Req() req,
   @UploadedFile() file: Express.Multer.File,
 ) {
+  console.log("VIDEO FILE:", file); // 🔥 debug
+
   if (!file) {
-    throw new Error("No video file received"); // 🔥 debug safety
+    throw new Error("No video file received");
   }
 
   const url = await uploadToR2(file);
