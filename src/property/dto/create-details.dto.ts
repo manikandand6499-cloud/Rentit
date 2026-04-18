@@ -14,10 +14,6 @@ class RoomDto {
   @IsString()
   sharing?: string;
 
-  
-
-
-
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
@@ -58,12 +54,9 @@ class RestrictionsDto {
 }
 
 export class CreateDetailsDto {
-
   /// BASIC
   @IsOptional() @IsString()
   propertyName?: string;
-
-
 
   /// PREFERENCES
   @IsOptional() @IsArray() @IsString({ each: true })
@@ -98,11 +91,6 @@ export class CreateDetailsDto {
   @Type(() => RoomDto)
   roomType?: RoomDto[];
 
-  
-
-
-
-  
   /// FOOD
   @IsOptional() @IsBoolean()
   foodIncluded?: boolean;
@@ -137,4 +125,10 @@ export class CreateDetailsDto {
 
   @IsOptional() @IsString()
   gateClosingTime?: string;
+
+  /// ✅ ADD THIS (FIX)
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  currentStep?: number;
 }
