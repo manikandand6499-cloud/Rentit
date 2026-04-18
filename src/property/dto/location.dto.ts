@@ -2,8 +2,8 @@ import { IsNumber } from "class-validator";
 
 export class UpdateLocationDto {
   @IsNumber()
-  latitude: number;
+  latitude: number | undefined;
 
   @IsNumber()
-  longitude: number;
+  longitude: number | undefined;
 }

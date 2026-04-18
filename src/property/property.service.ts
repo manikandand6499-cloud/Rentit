@@ -2,6 +2,7 @@
 import {
   Injectable,
   NotFoundException,
+  Param,
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
