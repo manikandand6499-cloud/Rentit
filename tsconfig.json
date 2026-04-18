@@ -14,6 +14,7 @@
     "types": ["node", "multer"],
     "sourceMap": true,
     "outDir": "./dist",
+    //"ignoreDeprecations": "5.0",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,

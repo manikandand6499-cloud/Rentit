@@ -19,6 +19,10 @@ model User {
   properties    Property[]
   subscriptions Subscription[]
   visits        Visit[]
+
+  /// ✅ ADD THIS
+  sentMessages     Message[] @relation("Sender")
+  receivedMessages Message[] @relation("Receiver")
 }
 
 model Subscription {
@@ -134,4 +138,18 @@ model Property {
   user   User    @relation(fields: [userId], references: [id])
   likes  Like[]
   visits Visit[]
+    messages Message[]
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  senderId    Int
+  receiverId  Int
+  propertyId  Int
+  message     String
+  createdAt   DateTime @default(now())
+
+  sender   User     @relation("Sender", fields: [senderId], references: [id])
+  receiver User     @relation("Receiver", fields: [receiverId], references: [id])
+  property Property @relation(fields: [propertyId], references: [id])
 }
