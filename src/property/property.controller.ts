@@ -118,13 +118,37 @@ export class PropertyController {
   STEP 5 - VIDEO (R2)
   ==============================
   */
-  @Post(':id/upload-video')
+@Post(':id/upload-video')
 @UseInterceptors(
   FileInterceptor('file', {
     limits: { fileSize: 100 * 1024 * 1024 },
   }),
 )
+async uploadVideo(
+  @Param('id') id: string,
+  @Req() req,
+  @UploadedFile() file: Express.Multer.File,
+) {
+  console.log("FILE RECEIVED:", file);
 
+  if (!file) {
+    throw new Error("No video file received"); // 🔥 force error
+  }
+
+  const url = await uploadToR2(file);
+
+  console.log("VIDEO URL:", url); // 🔥 debug
+
+  if (!url) {
+    throw new Error("Upload failed - URL missing");
+  }
+
+  return await this.propertyService.saveVideo(
+    Number(id),
+    req.user.userId,
+    url,
+  );
+}
   /*
   ==============================
   STEP 6 - CONTACT
