@@ -20,7 +20,7 @@ model User {
   subscriptions Subscription[]
   visits        Visit[]
 
-  /// ✅ ADD THIS
+  /// ✅ CORRECT
   sentMessages     Message[] @relation("Sender")
   receivedMessages Message[] @relation("Receiver")
 }
@@ -138,7 +138,7 @@ model Property {
   user   User    @relation(fields: [userId], references: [id])
   likes  Like[]
   visits Visit[]
-    messages Message[]
+  messages Message[] @relation("PropertyMessages")
 }
 
 model Message {
@@ -151,5 +151,9 @@ model Message {
 
   sender   User     @relation("Sender", fields: [senderId], references: [id])
   receiver User     @relation("Receiver", fields: [receiverId], references: [id])
-  property Property @relation(fields: [propertyId], references: [id])
+  property Property @relation("PropertyMessages", fields: [propertyId], references: [id])
+
+  @@index([propertyId])
+  @@index([senderId])
+  @@index([receiverId])
 }
