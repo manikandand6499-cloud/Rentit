@@ -53,7 +53,7 @@ async getChatList(userId: number) {
     },
   });
 
-  const map = new Map();
+  const map = new Map<number, any>();
 
   for (const msg of messages) {
     const otherUserId =
