@@ -39,4 +39,31 @@ export class ChatService {
     orderBy: { createdAt: 'asc' },
   });
 }
+
+async getChatList(userId: number) {
+  const messages = await this.prisma.message.findMany({
+    where: {
+      OR: [
+        { senderId: userId },
+        { receiverId: userId },
+      ],
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  const map = new Map();
+
+  for (const msg of messages) {
+    const otherUserId =
+      msg.senderId === userId ? msg.receiverId : msg.senderId;
+
+    if (!map.has(otherUserId)) {
+      map.set(otherUserId, msg);
+    }
+  }
+
+  return Array.from(map.values());
+}
 }

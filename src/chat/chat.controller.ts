@@ -23,4 +23,9 @@ get(
     Number(otherUserId),
   );
 }
+
+@Get('list')
+getList(@Query('userId') userId: string) {
+  return this.chatService.getChatList(Number(userId));
+}
 }
