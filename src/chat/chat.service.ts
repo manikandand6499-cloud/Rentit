@@ -21,18 +21,22 @@ export class ChatService {
     });
   }
 
-  // ✅ FIX: filter to only the conversation between userId and the
-  // other party, so private messages are not leaked to other users.
-  async getMessages(propertyId: number, userId: number) {
-    return this.prisma.message.findMany({
-      where: {
-        propertyId,
-        OR: [
-          { senderId: userId },
-          { receiverId: userId },
-        ],
-      },
-      orderBy: { createdAt: 'asc' },
-    });
-  }
+  async getMessages(propertyId: number, userId: number, otherUserId: number) {
+  return this.prisma.message.findMany({
+    where: {
+      propertyId,
+      OR: [
+        {
+          senderId: userId,
+          receiverId: otherUserId,
+        },
+        {
+          senderId: otherUserId,
+          receiverId: userId,
+        },
+      ],
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+}
 }

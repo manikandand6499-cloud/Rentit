@@ -11,13 +11,16 @@ export class ChatController {
     return this.chatService.sendMessage(body);
   }
 
-  // ✅ FIX: accept userId as query param so we return only the
-  // conversation between the two parties for this property.
-  @Get(':propertyId')
-  get(
-    @Param('propertyId') propertyId: string,
-    @Query('userId') userId: string,
-  ) {
-    return this.chatService.getMessages(Number(propertyId), Number(userId));
-  }
+ @Get(':propertyId')
+get(
+  @Param('propertyId') propertyId: string,
+  @Query('userId') userId: string,
+  @Query('otherUserId') otherUserId: string,
+) {
+  return this.chatService.getMessages(
+    Number(propertyId),
+    Number(userId),
+    Number(otherUserId),
+  );
+}
 }
