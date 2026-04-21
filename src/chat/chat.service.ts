@@ -55,38 +55,39 @@ export class ChatService {
   }
 
   /// ✅ CHAT LIST (LATEST MESSAGE PER USER)
-  async getChatList(userId: number) {
-    if (!userId) {
-      throw new BadRequestException('User ID required');
+async getChatList(userId: number) {
+  const messages = await this.prisma.message.findMany({
+    where: {
+      OR: [
+        { senderId: userId },
+        { receiverId: userId },
+      ],
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      sender: true,   // 👈 JOIN USER
+      receiver: true, // 👈 JOIN USER
+    },
+  });
+
+  const map = new Map<number, any>();
+
+  for (const msg of messages) {
+    const isSender = msg.senderId === userId;
+
+    const otherUser = isSender ? msg.receiver : msg.sender;
+
+    if (!map.has(otherUser.id)) {
+      map.set(otherUser.id, {
+        ...msg,
+        otherUserId: otherUser.id,
+        otherUserName: otherUser.name ?? otherUser.mobile, // 👈 NAME
+      });
     }
-
-    const messages = await this.prisma.message.findMany({
-      where: {
-        OR: [
-          { senderId: userId },
-          { receiverId: userId },
-        ],
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    const map = new Map<number, any>();
-
-    for (const msg of messages) {
-      const otherUserId =
-        msg.senderId === userId ? msg.receiverId : msg.senderId;
-
-      // ✅ Only keep latest message per user
-      if (!map.has(otherUserId)) {
-        map.set(otherUserId, {
-          ...msg,
-          otherUserId, // 🔥 useful for frontend
-        });
-      }
-    }
-
-    return Array.from(map.values());
   }
+
+  return Array.from(map.values());
+}
 }
