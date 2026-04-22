@@ -39,7 +39,7 @@ async handleCron() {
     console.log(`📊 Visit ${visit.id} | Diff: ${diff}`);
 
     // 🔥 SAFE WINDOW (NO MISS)
-    if (diff <= 1 && diff >= 0) {
+    if (diff <= 2 && diff >= -3) {
       console.log("🚀 Calling user...");
 
       await this.ivrService.callUser(visit.id);
