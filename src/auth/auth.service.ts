@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { JwtService } from "@nestjs/jwt";
 import { Twilio } from "twilio";
+import { IvrService } from "src/ivr/ivr.service";
 
 @Injectable()
 export class AuthService {
@@ -9,7 +10,8 @@ export class AuthService {
 
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private ivrService: IvrService,
   ) {
     this.twilioClient = new Twilio(
       process.env.TWILIO_ACCOUNT_SID,

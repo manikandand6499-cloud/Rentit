@@ -11,7 +11,7 @@ dayjs.extend(customParseFormat);
 export class IvrScheduler {
   constructor(
     private prisma: PrismaService,
-    private ivrService: IvrService
+    private ivrService: IvrService,
   ) {}
 
  @Cron('* * * * *')
