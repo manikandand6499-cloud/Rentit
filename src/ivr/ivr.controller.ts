@@ -8,10 +8,24 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { PrismaService } from '../../prisma/prisma.service';
+import { IvrService } from './ivr.service'; // 🔥 IMPORT THIS
 
 @Controller('ivr')
 export class IvrController {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private ivrService: IvrService, // 🔥 INJECT THIS
+  ) {}
+
+  // 🔥 FORCE CALL (TEST API)
+  @Get('force-call')
+  async forceCall() {
+    console.log("🔥 FORCE CALL TRIGGERED");
+
+    await this.ivrService.callUser(1); // 👈 use valid visitId
+
+    return "calling...";
+  }
 
   // 🎯 START CALL FLOW (EXOTEL)
   @Get('start')
@@ -34,7 +48,6 @@ export class IvrController {
 
     const message = this.getMessage(booking);
 
-    // ✅ EXOTEL FORMAT
     return res.type('text/xml').send(`
 <Response>
   <GetDigits 
@@ -81,7 +94,7 @@ export class IvrController {
     `);
   }
 
-  // 🔥 FORMAT TIME (IMPORTANT)
+  // 🔥 FORMAT TIME
   private formatTime(time: string): string {
     const [h, m] = time.split(':');
     let hour = parseInt(h);
@@ -93,7 +106,7 @@ export class IvrController {
     return `${hour}:${m} ${ampm}`;
   }
 
-  // 🌍 MESSAGE (SHORT & CLEAR FOR IVR)
+  // 🌍 MESSAGE
   private getMessage(booking: any): string {
     const name = booking.user.name || 'User';
     const time = this.formatTime(booking.time);
