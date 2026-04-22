@@ -43,7 +43,7 @@ export class IvrScheduler {
       console.log("👉 Diff (min):", diff);
 
       // 🎯 CALL 1 HOUR BEFORE (TEST: change to 5 mins)
-      if (diff <= 2 && diff >= 0) {
+      if (diff <= 2 && diff >= -1) {
         console.log("🚀 Calling user...");
 
         try {
