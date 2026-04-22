@@ -124,8 +124,6 @@
 //   }
 // }
 
-
-
 import {
   Controller,
   Get,
@@ -163,28 +161,27 @@ export class IvrController {
 
     const message = this.getMessage(booking);
 
+    // ✅ CLEAN TWILIO XML (VERY IMPORTANT)
     return res.type('text/xml').send(`
 <Response>
-<Gather 
-  numDigits="1" 
-  timeout="10"
-  action="${process.env.BASE_URL}/ivr/handle?bookingId=${bookingId}" 
-  method="POST"
->
-<Say voice="alice" language="ta-IN">${message}</Say>
-</Gather>
-
-<Say>No input received</Say>
-<Hangup/>
-    <Say>${message}</Say>
+  <Gather 
+    numDigits="1" 
+    timeout="10"
+    action="${process.env.BASE_URL}/ivr/handle?bookingId=${bookingId}" 
+    method="POST"
+  >
+    <Say voice="alice" language="ta-IN">
+      ${message}
+    </Say>
   </Gather>
+
   <Say>No input received</Say>
   <Hangup/>
 </Response>
     `);
   }
 
-  // 🎯 HANDLE RESPONSE
+  // 🎯 HANDLE USER INPUT
   @Post('handle')
   async handle(
     @Body() body: any,
@@ -203,7 +200,7 @@ export class IvrController {
       data: { status },
     });
 
-    // 🔔 Notify owner if YES
+    // 🔔 Notify owner if confirmed
     if (digit === '1') {
       await this.notifyOwner(bookingId);
     }
@@ -216,24 +213,27 @@ export class IvrController {
     `);
   }
 
-  // 🌍 MULTI LANGUAGE
- private getMessage(booking: any): string {
-  const name = booking.user.name || 'User';
-  const house = booking.property.propertyName || 'property';
-  const location = booking.property.location || '';
-  const time = booking.time;
+  // 🌍 MULTI LANGUAGE MESSAGE
+  private getMessage(booking: any): string {
+    const name = booking.user.name || 'User';
+    const house = booking.property.propertyName || 'property';
 
-  switch (booking.language) {
-     case 'ta':
+    // ✅ FIXED LOCATION
+    const location = `${booking.property.city}, ${booking.property.locality}`;
+
+    const time = booking.time;
+
+    switch (booking.language) {
+      case 'ta':
         return `வணக்கம் ${name}, நீங்கள் ${location} பகுதியில் உள்ள ${house} வீட்டை ${time} மணிக்கு பார்க்க திட்டமிட்டுள்ளீர்கள். வருவீர்களா? ஆம் என்றால் 1 அழுத்தவும், இல்லை என்றால் 2 அழுத்தவும்.`;
 
       case 'hi':
         return `नमस्ते ${name}, आपने ${location} में ${house} को ${time} बजे देखने का समय तय किया है। आएंगे? हाँ के लिए 1 दबाएँ, नहीं के लिए 2 दबाएँ।`;
 
-    default:
-      return `YOUR EXACT ENGLISH TEXT HERE with ${name}, ${house}, ${time}`; // ← change this
+      default:
+        return `Hello ${name}, you have scheduled a visit to ${house} at ${location} at ${time}. Press 1 to confirm, press 2 to cancel.`;
+    }
   }
-}
 
   // 🔔 OWNER NOTIFICATION
   private async notifyOwner(bookingId: number) {
@@ -248,6 +248,6 @@ export class IvrController {
       `📩 ${booking.user.name} will visit ${booking.property.propertyName} at ${booking.time}`
     );
 
-    // 👉 Add SMS / WhatsApp here later
+    // 👉 Future: SMS / WhatsApp / Push
   }
 }

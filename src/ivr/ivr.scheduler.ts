@@ -37,7 +37,7 @@ async handleCron() {
     const diff = visitDateTime.diff(now, 'minute');
 
     console.log(`📊 Visit ${visit.id} | Diff: ${diff}`);
-
+    console.log("⏱ Checking visits...");
     // 🎯 1 HOUR BEFORE CALL
     if (diff <= 2 && diff >= 0) {
       console.log("🚀 Calling user...");
