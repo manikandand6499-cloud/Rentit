@@ -68,6 +68,8 @@ model Visit {
   status   String @default("pending")
   language String @default("en")
 
+  isCalled Boolean @default(false) // 🔥 ADD THIS
+
   userId     Int
   propertyId Int
 

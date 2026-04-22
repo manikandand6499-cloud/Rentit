@@ -14,38 +14,44 @@ export class IvrScheduler {
     private ivrService: IvrService
   ) {}
 
-  @Cron('* * * * *')
-  async handleCron() {
-    console.log("⏱ Checking visits...");
+ @Cron('* * * * *')
+async handleCron() {
+  console.log("⏱ Checking visits...");
 
-    const visits = await this.prisma.visit.findMany({
-      where: { status: 'pending' },
-      include: { user: true },
-    });
+  const visits = await this.prisma.visit.findMany({
+    where: { 
+      status: 'pending',
+      isCalled: false // 🔥 prevent duplicate calls
+    },
+    include: { user: true },
+  });
 
-    const now = dayjs();
+  const now = dayjs();
 
-    for (const visit of visits) {
-      const visitDateTime = dayjs(
-        `${visit.date} ${visit.time}`,
-        'YYYY-MM-DD hh:mm A'
-      );
+  for (const visit of visits) {
+    const visitDateTime = dayjs(
+      `${visit.date} ${visit.time}`,
+      'YYYY-MM-DD HH:mm' // ✅ FIXED FORMAT
+    );
 
-      const diff = visitDateTime.diff(now, 'minute');
+    const diff = visitDateTime.diff(now, 'minute');
 
-      console.log(`📊 Visit ${visit.id} | Diff: ${diff}`);
+    console.log(`📊 Visit ${visit.id} | Diff: ${diff}`);
 
-      // ✅ CALL BEFORE 2 MINUTES
-      if (diff <= 2 && diff >= 0) {
-        console.log("🚀 Calling user...");
+    // 🎯 1 HOUR BEFORE CALL
+    if (diff <= 2 && diff >= 0) {
+      console.log("🚀 Calling user...");
 
-        await this.ivrService.callUser(visit.id);
+      await this.ivrService.callUser(visit.id);
 
-        await this.prisma.visit.update({
-          where: { id: visit.id },
-          data: { status: 'calling' },
-        });
-      }
+      await this.prisma.visit.update({
+        where: { id: visit.id },
+        data: { 
+          status: 'calling',
+          isCalled: true // 🔥 IMPORTANT
+        },
+      });
     }
   }
+}
 }
