@@ -61,13 +61,7 @@ export class IvrController {
 </Response>
     `);
   }
-
-  @Get('test-call')
-async testCall() {
-  await this.prisma.visit.findFirst(); // just to ensure DB connected
-  await this.ivrService.callUser(1); // 👈 use valid visitId
-  return "Calling...";
-}
+  
 
   // 🎯 HANDLE USER INPUT
   @Post('handle')
