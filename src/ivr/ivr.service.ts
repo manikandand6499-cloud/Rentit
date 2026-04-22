@@ -1,17 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import Twilio from 'twilio';
+import axios from 'axios';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class IvrService {
-  private client;
-
-  constructor(private prisma: PrismaService) {
-    this.client = Twilio(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN
-    );
-  }
+  constructor(private prisma: PrismaService) {}
 
   async callUser(visitId: number) {
     const visit = await this.prisma.visit.findUnique({
@@ -19,30 +12,43 @@ export class IvrService {
       include: { user: true, property: true },
     });
 
-    if (!visit) return;
-
-    let mobile = visit.user.mobile;
-
-    if (!mobile.startsWith("+91")) {
-      mobile = "+91" + mobile;
+    if (!visit) {
+      console.log("❌ Visit not found");
+      return;
     }
 
+    // 📱 FORMAT MOBILE (IMPORTANT)
+    let mobile = visit.user.mobile;
+
+    if (!mobile.startsWith("91")) {
+      mobile = "91" + mobile;
+    }
+
+    // 🌍 IVR URL
     const url = `${process.env.BASE_URL}/ivr/start?bookingId=${visit.id}`;
 
-    console.log("📞 Calling:", mobile);
-    console.log("🌍 URL:", url);
-    console.log("☎ FROM:", process.env.TWILIO_PHONE_NUMBER);
+    // 🔥 EXOTEL API URL
+    const exotelUrl = `https://${process.env.EXOTEL_API_KEY}:${process.env.EXOTEL_API_TOKEN}@api.exotel.com/v1/Accounts/${process.env.EXOTEL_SID}/Calls/connect.json`;
+
+    console.log("📞 EXOTEL CALL START");
+    console.log("👉 To:", mobile);
+    console.log("👉 From:", process.env.EXOTEL_CALLER_ID);
+    console.log("👉 URL:", url);
 
     try {
-      const call = await this.client.calls.create({
-        to: mobile,
-        from: process.env.TWILIO_PHONE_NUMBER, // ✅ FIXED
-        url,
+      const response = await axios.post(exotelUrl, null, {
+        params: {
+          From: process.env.EXOTEL_CALLER_ID, // ✅ Your Exophone
+          To: mobile, // ✅ 91xxxxxxxxxx
+          CallerId: process.env.EXOTEL_CALLER_ID, // 🔥 IMPORTANT
+          CallType: "trans", // 🔥 MUST FOR OUTBOUND
+          Url: url, // 🔥 Your IVR API
+        },
       });
 
-      console.log("✅ CALL SID:", call.sid);
-    } catch (err) {
-      console.error("❌ TWILIO ERROR:", err instanceof Error ? err.message : String(err));
+      console.log("✅ EXOTEL SUCCESS:", response.data);
+    } catch (error: any) {
+      console.error("❌ EXOTEL ERROR:", error.response?.data || error.message);
     }
   }
 }

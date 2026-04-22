@@ -14,44 +14,54 @@ export class IvrScheduler {
     private ivrService: IvrService,
   ) {}
 
- @Cron('* * * * *')
-async handleCron() {
-  console.log("⏱ Checking visits...");
-
-  const visits = await this.prisma.visit.findMany({
-    where: { 
-      status: 'pending',
-      isCalled: false // 🔥 prevent duplicate calls
-    },
-    include: { user: true },
-  });
-
-  const now = dayjs();
-
-  for (const visit of visits) {
-    const visitDateTime = dayjs(
-      `${visit.date} ${visit.time}`,
-      'YYYY-MM-DD HH:mm' // ✅ FIXED FORMAT
-    );
-
-    const diff = visitDateTime.diff(now, 'minute');
-
-    console.log(`📊 Visit ${visit.id} | Diff: ${diff}`);
+  // ⏱ Runs every minute
+  @Cron('* * * * *')
+  async handleCron() {
     console.log("⏱ Checking visits...");
-    // 🎯 1 HOUR BEFORE CALL
-    if (diff <= 2 && diff >= 0) {
-      console.log("🚀 Calling user...");
 
-      await this.ivrService.callUser(visit.id);
+    const visits = await this.prisma.visit.findMany({
+      where: {
+        status: 'pending',
+        isCalled: false, // ✅ avoid duplicate
+      },
+    });
 
-      await this.prisma.visit.update({
-        where: { id: visit.id },
-        data: { 
-          status: 'calling',
-          isCalled: true // 🔥 IMPORTANT
-        },
-      });
+    const now = dayjs();
+
+    console.log("🕒 CURRENT TIME:", now.format('YYYY-MM-DD HH:mm'));
+
+    for (const visit of visits) {
+      const visitDateTime = dayjs(
+        `${visit.date} ${visit.time}`,
+        'YYYY-MM-DD HH:mm'
+      );
+
+      const diff = visitDateTime.diff(now, 'minute');
+
+      console.log(`📊 Visit ${visit.id}`);
+      console.log("👉 Visit Time:", visitDateTime.format('YYYY-MM-DD HH:mm'));
+      console.log("👉 Diff (min):", diff);
+
+      // 🎯 CALL 1 HOUR BEFORE (TEST: change to 5 mins)
+      if (diff <= 60 && diff >= 55) {
+        console.log("🚀 Calling user...");
+
+        try {
+          await this.ivrService.callUser(visit.id);
+
+          await this.prisma.visit.update({
+            where: { id: visit.id },
+            data: {
+              status: 'calling',
+              isCalled: true,
+            },
+          });
+
+          console.log("✅ Call triggered & DB updated");
+        } catch (err) {
+          console.error("❌ CALL ERROR:", err);
+        }
+      }
     }
   }
-}
 }

@@ -13,7 +13,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class IvrController {
   constructor(private prisma: PrismaService) {}
 
-  // 🎯 START CALL FLOW
+  // 🎯 START CALL FLOW (EXOTEL)
   @Get('start')
   async start(
     @Query('bookingId') bookingId: number,
@@ -28,40 +28,28 @@ export class IvrController {
       return res.type('text/xml').send(`
 <Response>
   <Say>Invalid booking</Say>
-  <Hangup/>
 </Response>
       `);
     }
 
     const message = this.getMessage(booking);
 
-    // 🔥 DYNAMIC LANGUAGE FIX
-    const lang =
-      booking.language === 'ta'
-        ? 'ta-IN'
-        : booking.language === 'hi'
-        ? 'hi-IN'
-        : 'en-IN';
-
+    // ✅ EXOTEL FORMAT
     return res.type('text/xml').send(`
 <Response>
-  <Gather 
+  <GetDigits 
+    timeout="10" 
     numDigits="1" 
-    timeout="10"
     action="${process.env.BASE_URL}/ivr/handle?bookingId=${bookingId}" 
     method="POST"
   >
-    <Say voice="alice" language="${lang}">
-      ${message}
-    </Say>
-  </Gather>
+    <Say>${message}</Say>
+  </GetDigits>
 
   <Say>No input received</Say>
-  <Hangup/>
 </Response>
     `);
   }
-  
 
   // 🎯 HANDLE USER INPUT
   @Post('handle')
@@ -89,7 +77,6 @@ export class IvrController {
     return res.type('text/xml').send(`
 <Response>
   <Say>Thank you. Your response is recorded.</Say>
-  <Hangup/>
 </Response>
     `);
   }
@@ -106,13 +93,9 @@ export class IvrController {
     return `${hour}:${m} ${ampm}`;
   }
 
-  // 🌍 MESSAGE
+  // 🌍 MESSAGE (SHORT & CLEAR FOR IVR)
   private getMessage(booking: any): string {
     const name = booking.user.name || 'User';
-    const house = booking.property.propertyName || 'property';
-
-    const location = `${booking.property.city}, ${booking.property.locality}`;
-
     const time = this.formatTime(booking.time);
 
     switch (booking.language) {
@@ -123,7 +106,7 @@ export class IvrController {
         return `नमस्ते ${name}, आपकी विज़िट ${time} पर है। आने के लिए 1 दबाएँ, रद्द करने के लिए 2 दबाएँ।`;
 
       default:
-        return `Hello ${name}, your visit is scheduled at ${time}. Press 1 to confirm, press 2 to cancel.`;
+        return `Hello ${name}, your visit is at ${time}. Press 1 to confirm, press 2 to cancel.`;
     }
   }
 
@@ -137,7 +120,7 @@ export class IvrController {
     if (!booking) return;
 
     console.log(
-      `📩 ${booking.user.name} will visit ${booking.property.propertyName} at ${booking.time}`
+      `📩 ${booking.user.name} confirmed visit at ${booking.time}`
     );
   }
 }

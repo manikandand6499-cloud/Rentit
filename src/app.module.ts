@@ -9,11 +9,13 @@ import { UserModule } from "./user/user.module";
 import { PaymentModule } from "./payment/payment.module";
 import { VisitModule } from "./visit/visit.module";
 import { ChatModule } from "./chat/chat.module";
-
-import { IvrModule } from "./ivr/ivr.module"; // 🔥 USE MODULE
+import { IvrModule } from "./ivr/ivr.module";
 
 @Module({
   imports: [
+    // 🔥 SCHEDULER FIRST (best practice)
+    ScheduleModule.forRoot(),
+
     PrismaModule,
     AuthModule,
     PropertyModule,
@@ -22,9 +24,7 @@ import { IvrModule } from "./ivr/ivr.module"; // 🔥 USE MODULE
     PaymentModule,
     VisitModule,
     ChatModule,
-    IvrModule, // 🔥 IMPORTANT
-
-    ScheduleModule.forRoot(),
+    IvrModule, // ✅ IVR included
   ],
 })
 export class AppModule {}
