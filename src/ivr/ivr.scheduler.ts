@@ -16,52 +16,42 @@ export class IvrScheduler {
 
   // ⏱ Runs every minute
   @Cron('* * * * *')
-  async handleCron() {
-    console.log("⏱ Checking visits...");
+async handleCron() {
+  console.log("⏱ Checking visits...");
 
-    const visits = await this.prisma.visit.findMany({
-      where: {
-        status: 'pending',
-        isCalled: false, // ✅ avoid duplicate
-      },
-    });
+  const visits = await this.prisma.visit.findMany({
+    where: {
+      status: 'pending',
+      isCalled: false,
+    },
+  });
 
-    const now = dayjs();
+  const now = dayjs();
 
-    console.log("🕒 CURRENT TIME:", now.format('YYYY-MM-DD HH:mm'));
+  for (const visit of visits) {
+    const visitDateTime = dayjs(
+      `${visit.date} ${visit.time}`,
+      'YYYY-MM-DD HH:mm'
+    );
 
-    for (const visit of visits) {
-      const visitDateTime = dayjs(
-        `${visit.date} ${visit.time}`,
-        'YYYY-MM-DD HH:mm'
-      );
+    const diff = visitDateTime.diff(now, 'minute');
 
-      const diff = visitDateTime.diff(now, 'minute');
+    console.log(`📊 Visit ${visit.id} | Diff: ${diff}`);
 
-      console.log(`📊 Visit ${visit.id}`);
-      console.log("👉 Visit Time:", visitDateTime.format('YYYY-MM-DD HH:mm'));
-      console.log("👉 Diff (min):", diff);
+    // 🔥 SAFE WINDOW (NO MISS)
+    if (diff <= 5 && diff >= -2) {
+      console.log("🚀 Calling user...");
 
-      // 🎯 CALL 1 HOUR BEFORE (TEST: change to 5 mins)
-      if (diff <= 2 && diff >= -1) {
-        console.log("🚀 Calling user...");
+      await this.ivrService.callUser(visit.id);
 
-        try {
-          await this.ivrService.callUser(visit.id);
-
-          await this.prisma.visit.update({
-            where: { id: visit.id },
-            data: {
-              status: 'calling',
-              isCalled: true,
-            },
-          });
-
-          console.log("✅ Call triggered & DB updated");
-        } catch (err) {
-          console.error("❌ CALL ERROR:", err);
-        }
-      }
+      await this.prisma.visit.update({
+        where: { id: visit.id },
+        data: {
+          status: 'calling',
+          isCalled: true,
+        },
+      });
     }
   }
+}
 }
