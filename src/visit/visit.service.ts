@@ -40,46 +40,59 @@ export class VisitService {
 async createVisit(userId: number, dto: CreateVisitDto) {
   const { propertyId, date, time } = dto;
 
-  // 🔥 1. VALIDATE propertyId FIRST
-  if (!propertyId) {
-    throw new BadRequestException("propertyId is required");
-  }
+  if (!propertyId) throw new BadRequestException("propertyId required");
 
-  // 🔥 2. CHECK PROPERTY EXISTS
   const property = await this.prisma.property.findUnique({
     where: { id: propertyId },
   });
 
-  if (!property) {
-    throw new NotFoundException("Property not found");
+  if (!property) throw new NotFoundException("Property not found");
+
+  if (!property.availableFrom) {
+    throw new BadRequestException("Property not available yet");
   }
 
-  // 🔥 3. VALIDATE INPUT
-  if (!date) {
-    throw new BadRequestException("Date is required");
+  if (!date || !time) {
+    throw new BadRequestException("Date & Time required");
   }
 
-  if (!time) {
-    throw new BadRequestException("Time is required");
+  // 🔥 1. VALID DATE RANGE (15 DAYS LOGIC)
+  const today = new Date();
+  const start = new Date(property.availableFrom);
+
+  // if today > availableFrom → start = today
+  if (today > start) {
+    start.setHours(0, 0, 0, 0);
   }
 
-  // 🔥 4. HANDLE TIME FORMAT
+  const end = new Date(start);
+  end.setDate(start.getDate() + 15);
+
+  const selectedDate = new Date(date);
+
+  if (selectedDate < start || selectedDate > end) {
+    throw new BadRequestException("Date not in allowed range ⚠️");
+  }
+
+  // 🔥 2. TIME CONVERT
   let selectedTime24 = time;
-
   if (time.includes("AM") || time.includes("PM")) {
     selectedTime24 = this.convertTo24Hour(time);
   }
 
-  // 🔥 5. PREVENT PAST BOOKING
-  const now = new Date();
-  const visitDateTime = new Date(`${date}T${selectedTime24}`);
-
-  if (visitDateTime < now) {
-    throw new BadRequestException("Cannot book past time ⛔");
+  // 🔥 3. DEFAULT TIME RANGE (7AM–10PM)
+  if (selectedTime24 < "07:00" || selectedTime24 > "22:00") {
+    throw new BadRequestException("Time outside allowed range ⛔");
   }
 
-  // 🔥 6. SLOT CONFLICT CHECK
-  const existing = await this.prisma.visit.findFirst({
+  // 🔥 4. PREVENT PAST TIME
+  const visitDateTime = new Date(`${date}T${selectedTime24}`);
+  if (visitDateTime < new Date()) {
+    throw new BadRequestException("Past time not allowed");
+  }
+
+  // 🔥 5. SLOT CHECK
+  const exists = await this.prisma.visit.findFirst({
     where: {
       propertyId,
       date,
@@ -87,13 +100,11 @@ async createVisit(userId: number, dto: CreateVisitDto) {
     },
   });
 
-  if (existing) {
-    throw new BadRequestException(
-      "This time slot already booked macha ⚠️"
-    );
+  if (exists) {
+    throw new BadRequestException("Slot already booked ⚠️");
   }
 
-  // 🔥 7. CREATE VISIT
+  // 🔥 6. CREATE
   return this.prisma.visit.create({
     data: {
       userId,
