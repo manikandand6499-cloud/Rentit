@@ -162,17 +162,18 @@ export class VisitService {
   }
 
   // 🔥 GET MY VISITS
-  async getMyVisits(userId: number) {
-    return this.prisma.visit.findMany({
-      where: { userId },
-      include: {
-        property: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-  }
+ async getMyVisits(userId: number) {
+  return this.prisma.visit.findMany({
+    where: { userId },
+    include: {
+      property: true,
+      user: true, // 🔥 THIS IS MISSING
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
 
   // 🔥 CANCEL VISIT
   async cancelVisit(id: number) {
