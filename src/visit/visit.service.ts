@@ -108,16 +108,18 @@ export class VisitService {
       },
     });
 
-    for (const v of oldVisits) {
-      const oldTime = new Date(`${v.date}T${v.time}`);
+   for (const v of oldVisits) {
+  if (!v.visitDateTime) continue; // ✅ FIX
 
-      if (oldTime < new Date()) {
-        await this.prisma.visit.update({
-          where: { id: v.id },
-          data: { status: "completed" },
-        });
-      }
-    }
+  const oldTime = new Date(v.visitDateTime);
+
+  if (oldTime < new Date()) {
+    await this.prisma.visit.update({
+      where: { id: v.id },
+      data: { status: "completed" },
+    });
+  }
+}
 
     // 🔥 8️⃣ BLOCK MULTIPLE ACTIVE BOOKINGS (VERY IMPORTANT)
     const activeVisit = await this.prisma.visit.findFirst({
@@ -139,10 +141,9 @@ export class VisitService {
     // 9️⃣ SLOT CONFLICT CHECK
     const exists = await this.prisma.visit.findFirst({
       where: {
-        propertyId,
-        date,
-        time: selectedTime24,
-      },
+  propertyId,
+  visitDateTime: new Date(`${date}T${selectedTime24}`),
+}
     });
 
     if (exists) {
@@ -150,28 +151,38 @@ export class VisitService {
     }
 
     // 🔟 CREATE VISIT
-    return this.prisma.visit.create({
-      data: {
-        userId,
-        propertyId,
-        date,
-        time: selectedTime24,
-        status: "pending",
-      },
-    });
+   return this.prisma.visit.create({
+  data: {
+    userId,
+    propertyId,
+    visitDateTime: new Date(`${date}T${selectedTime24}`), // ✅ FIX
+    status: "pending",
+  },
+});
   }
 
   // 🔥 GET MY VISITS
  async getMyVisits(userId: number) {
-  return this.prisma.visit.findMany({
+  const visits = await this.prisma.visit.findMany({
     where: { userId },
     include: {
       property: true,
-      user: true, // 🔥 THIS IS MISSING
+      user: true,
     },
     orderBy: {
-      createdAt: "desc",
+      visitDateTime: "desc",
     },
+  });
+
+  // 🔥 FIX OLD DATA
+  return visits.map((v) => {
+    if (!v.visitDateTime && v.date && v.time) {
+      return {
+        ...v,
+        visitDateTime: new Date(`${v.date}T${v.time}`),
+      };
+    }
+    return v;
   });
 }
 
