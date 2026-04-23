@@ -7,16 +7,18 @@ import {
 import { Type } from "class-transformer";
 
 export class CreateVisitDto {
-
+  
   @Type(() => Number)
   @IsNumber()
-propertyId: number | undefined;
+  @IsNotEmpty()
+  propertyId: number | undefined;
 
   // 📅 Date (YYYY-MM-DD)
   @IsDateString()
+  @IsNotEmpty()
   date: string | undefined;
 
-  // ⏰ Time (HH:mm)
+  // ⏰ Time (HH:mm or 04:30 PM)
   @IsString()
   @IsNotEmpty()
   time: string | undefined;
