@@ -9,6 +9,7 @@ import {
 import type { Response } from 'express';
 import { PrismaService } from '../../prisma/prisma.service';
 import { IvrService } from './ivr.service';
+import { VisitStatus } from '@prisma/client';
 
 @Controller('ivr')
 export class IvrController {
@@ -17,7 +18,7 @@ export class IvrController {
     private ivrService: IvrService,
   ) {}
 
-  // 🔥 FORCE CALL
+  // 🔥 FORCE CALL (TEST)
   @Get('force-call')
   async forceCall() {
     console.log("🔥 FORCE CALL TRIGGERED");
@@ -25,7 +26,7 @@ export class IvrController {
     return "calling...";
   }
 
-  // 🎯 START IVR
+  // 🎯 START IVR CALL
   @Get('start')
   async start(
     @Query('bookingId') bookingId: number,
@@ -59,7 +60,7 @@ export class IvrController {
     `);
   }
 
-  // 🎯 HANDLE INPUT
+  // 🎯 HANDLE USER INPUT (FINAL FIXED)
   @Post('handle')
   async handle(
     @Body() body: any,
@@ -68,9 +69,14 @@ export class IvrController {
   ) {
     const digit = body.Digits;
 
-    let status = 'pending';
-    if (digit === '1') status = 'confirmed';
-    else if (digit === '2') status = 'cancelled';
+    // ✅ USE ENUM (VERY IMPORTANT)
+    let status: VisitStatus = VisitStatus.pending;
+
+    if (digit === '1') status = VisitStatus.confirmed;
+    else if (digit === '2') status = VisitStatus.cancelled;
+
+    console.log("📲 IVR INPUT:", digit);
+    console.log("📊 STATUS:", status);
 
     await this.prisma.visit.update({
       where: { id: Number(bookingId) },
@@ -79,11 +85,12 @@ export class IvrController {
 
     return res.type('text/xml').send(`
 <Response>
-  <Say>Thank you</Say>
+  <Say>Thank you. Your response is recorded.</Say>
 </Response>
     `);
   }
 
+  // 🔥 FORMAT TIME
   private formatTime(time: string): string {
     const [h, m] = time.split(':');
     let hour = parseInt(h);
@@ -92,6 +99,7 @@ export class IvrController {
     return `${hour}:${m} ${ampm}`;
   }
 
+  // 🔥 MESSAGE
   private getMessage(booking: any): string {
     const name = booking.user.name || 'User';
     const time = this.formatTime(booking.time);

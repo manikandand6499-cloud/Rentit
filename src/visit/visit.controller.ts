@@ -7,6 +7,9 @@ import {
   Body,
   Req,
   UseGuards,
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus,
 } from "@nestjs/common";
 import { VisitService } from "./visit.service";
 import { CreateVisitDto } from "./dto/create-visit.dto";
@@ -19,26 +22,34 @@ export class VisitController {
 
   // 🔥 CREATE VISIT
   @Post()
-  create(@Req() req, @Body() dto: CreateVisitDto) {
-    console.log("REQ USER:", req.user);
+  @HttpCode(HttpStatus.CREATED)
+  create(@Req() req: any, @Body() dto: CreateVisitDto) {
+    const userId = req.user?.userId || req.user?.id;
 
-    return this.visitService.createVisit(
-      req.user.userId || req.user.id,
-      dto
-    );
+    if (!userId) {
+      throw new Error("User not found in request"); // 🔥 safety
+    }
+
+    return this.visitService.createVisit(userId, dto);
   }
 
-  // 🔥 GET MY VISITS (IMPORTANT)
+  // 🔥 GET MY VISITS
   @Get("my")
-  getMyVisits(@Req() req) {
-    return this.visitService.getMyVisits(
-      req.user.userId || req.user.id
-    );
+  @HttpCode(HttpStatus.OK)
+  getMyVisits(@Req() req: any) {
+    const userId = req.user?.userId || req.user?.id;
+
+    if (!userId) {
+      throw new Error("User not found in request");
+    }
+
+    return this.visitService.getMyVisits(userId);
   }
 
-  // 🔥 CANCEL VISIT (for frontend)
+  // 🔥 CANCEL VISIT
   @Patch(":id/cancel")
-  cancelVisit(@Param("id") id: string) {
-    return this.visitService.cancelVisit(Number(id));
+  @HttpCode(HttpStatus.OK)
+  cancelVisit(@Param("id", ParseIntPipe) id: number) {
+    return this.visitService.cancelVisit(id);
   }
 }
