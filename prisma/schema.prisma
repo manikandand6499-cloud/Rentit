@@ -64,9 +64,15 @@ model Like {
 model Visit {
   id       Int         @id @default(autoincrement())
 
-  visitDateTime DateTime   // 🔥 BEST FIX
+  // 🔁 TEMP: keep old fields during migration
+  date String?
+  time String?
 
-  status   VisitStatus @default(pending)
+  // ✅ NEW FIELD (optional for now)
+  visitDateTime DateTime?
+
+  status VisitStatus @default(pending)
+
   language String      @default("en")
   isCalled Boolean     @default(false)
 
@@ -82,7 +88,19 @@ model Visit {
   @@index([propertyId])
   @@index([status])
 
-  @@unique([propertyId, visitDateTime]) // 🔥 prevent double booking
+  // ⚠️ keep old unique during migration (if you had it)
+  // @@unique([propertyId, date, time])
+
+  // ❗ Add this AFTER migration completes
+  // @@unique([propertyId, visitDateTime])
+}
+
+enum VisitStatus {
+  pending
+  confirmed
+  calling
+  cancelled
+  completed
 }
 
 model Property {
@@ -164,12 +182,4 @@ model Message {
   @@index([propertyId])
   @@index([senderId])
   @@index([receiverId])
-}
-
-enum VisitStatus {
-  pending
-  confirmed
-  calling
-  cancelled
-  completed
 }
