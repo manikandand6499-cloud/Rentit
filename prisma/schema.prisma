@@ -63,11 +63,10 @@ model Like {
 
 model Visit {
   id       Int         @id @default(autoincrement())
-  date     String
-  time     String
 
-  status   VisitStatus @default(pending) // ✅ FIXED
+  visitDateTime DateTime   // 🔥 BEST FIX
 
+  status   VisitStatus @default(pending)
   language String      @default("en")
   isCalled Boolean     @default(false)
 
@@ -78,6 +77,12 @@ model Visit {
   property Property @relation(fields: [propertyId], references: [id])
 
   createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([status])
+
+  @@unique([propertyId, visitDateTime]) // 🔥 prevent double booking
 }
 
 model Property {
