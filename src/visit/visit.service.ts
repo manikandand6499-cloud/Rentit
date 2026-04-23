@@ -26,11 +26,11 @@ export class VisitService {
     return `${hours.padStart(2, "0")}:${minutes}`;
   }
 
-  // 🔥 CREATE VISIT
+  // 🔥 CREATE VISIT (PRO VERSION)
   async createVisit(userId: number, dto: CreateVisitDto) {
     const { propertyId, date, time } = dto;
 
-    // 1️⃣ VALIDATE INPUT
+    // 1️⃣ VALIDATION
     if (!propertyId) {
       throw new BadRequestException("propertyId required");
     }
@@ -39,7 +39,7 @@ export class VisitService {
       throw new BadRequestException("Date & Time required");
     }
 
-    // 2️⃣ CHECK PROPERTY
+    // 2️⃣ PROPERTY CHECK
     const property = await this.prisma.property.findUnique({
       where: { id: propertyId },
     });
@@ -85,7 +85,6 @@ export class VisitService {
     // 5️⃣ TIME RANGE (7AM–10PM)
     const [h, m] = selectedTime24.split(":");
     const hour = Number(h);
-    const minute = Number(m);
 
     if (hour < 7 || hour > 22) {
       throw new BadRequestException("Allowed time: 7AM to 10PM only");
@@ -98,7 +97,46 @@ export class VisitService {
       throw new BadRequestException("Past time not allowed");
     }
 
-    // 7️⃣ SLOT CONFLICT CHECK
+    // 🔥 7️⃣ AUTO EXPIRE OLD VISITS
+    const oldVisits = await this.prisma.visit.findMany({
+      where: {
+        userId,
+        propertyId,
+        status: {
+          in: ["pending", "confirmed", "calling"],
+        },
+      },
+    });
+
+    for (const v of oldVisits) {
+      const oldTime = new Date(`${v.date}T${v.time}`);
+
+      if (oldTime < new Date()) {
+        await this.prisma.visit.update({
+          where: { id: v.id },
+          data: { status: "completed" },
+        });
+      }
+    }
+
+    // 🔥 8️⃣ BLOCK MULTIPLE ACTIVE BOOKINGS (VERY IMPORTANT)
+    const activeVisit = await this.prisma.visit.findFirst({
+      where: {
+        userId,
+        propertyId,
+        status: {
+          in: ["pending", "confirmed", "calling"],
+        },
+      },
+    });
+
+    if (activeVisit) {
+      throw new BadRequestException(
+        "You already scheduled a visit. Complete or cancel first."
+      );
+    }
+
+    // 9️⃣ SLOT CONFLICT CHECK
     const exists = await this.prisma.visit.findFirst({
       where: {
         propertyId,
@@ -111,23 +149,24 @@ export class VisitService {
       throw new BadRequestException("This time slot already booked");
     }
 
-    // 8️⃣ CREATE VISIT
+    // 🔟 CREATE VISIT
     return this.prisma.visit.create({
       data: {
         userId,
         propertyId,
         date,
         time: selectedTime24,
+        status: "pending",
       },
     });
   }
 
-  // 🔥 GET MY VISITS (IMPORTANT FOR MYACTIVITY)
+  // 🔥 GET MY VISITS
   async getMyVisits(userId: number) {
     return this.prisma.visit.findMany({
       where: { userId },
       include: {
-        property: true, // 🔥 MUST FOR FRONTEND
+        property: true,
       },
       orderBy: {
         createdAt: "desc",

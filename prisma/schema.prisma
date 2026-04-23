@@ -62,13 +62,14 @@ model Like {
 }
 
 model Visit {
-  id       Int    @id @default(autoincrement())
+  id       Int         @id @default(autoincrement())
   date     String
   time     String
-  status   String @default("pending")
-  language String @default("en")
 
-  isCalled Boolean @default(false) // 🔥 ADD THIS
+  status   VisitStatus @default(pending) // ✅ FIXED
+
+  language String      @default("en")
+  isCalled Boolean     @default(false)
 
   userId     Int
   propertyId Int
@@ -158,4 +159,12 @@ model Message {
   @@index([propertyId])
   @@index([senderId])
   @@index([receiverId])
+}
+
+enum VisitStatus {
+  pending
+  confirmed
+  calling
+  cancelled
+  completed
 }
