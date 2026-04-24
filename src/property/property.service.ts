@@ -46,51 +46,49 @@ export class PropertyService {
  async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
   await this.checkPropertyOwner(id, userId);
 
+  console.log("ROOM TYPE:", data.roomType);
+  console.log("LANDMARK:", data.landmark);
+
   return this.prisma.property.update({
     where: { id },
     data: {
-      /// 📍 LOCATION
+      /// LOCATION
       city: data.city ?? undefined,
       street: data.street ?? undefined,
       locality: data.locality ?? undefined,
-      landmark: data.landmark ?? undefined,
+
+      // ✅ FIXED
+      landmark: data.landmark?.trim() || undefined,
+
       latitude: data.latitude ?? undefined,
       longitude: data.longitude ?? undefined,
 
-      /// 🏠 BASIC
+      /// BASIC
       propertyName: data.propertyName ?? undefined,
 
-      /// 👥 PREFERENCES
+      /// PREFERENCES
       preferredGuests: data.preferredGuests ?? undefined,
       preferredTenant: data.preferredTenant ?? undefined,
 
-      /// 🛏 ROOM (🔥 FIXED)
-      roomType: data.roomType
-        ? JSON.parse(JSON.stringify(data.roomType))
+      /// ROOM ✅ SAFE FIX
+      roomType: Array.isArray(data.roomType) && data.roomType.length > 0
+        ? data.roomType
         : undefined,
 
-    
-
-      /// 🍽 FOOD (🔥 FIXED)
+      /// FOOD
       foodIncluded: data.foodIncluded ?? undefined,
-      foodType: data.foodType
-        ? JSON.parse(JSON.stringify(data.foodType))
-        : undefined,
+      foodType: data.foodType ?? undefined,
 
-      /// 🚗 PARKING
+      /// PARKING
       parking: data.parking ?? undefined,
 
-      /// 🏠 AMENITIES (🔥 FIXED)
-      pgAmenities: data.pgAmenities
-        ? JSON.parse(JSON.stringify(data.pgAmenities))
-        : undefined,
+      /// AMENITIES
+      pgAmenities: data.pgAmenities ?? undefined,
 
-      /// 🚫 RESTRICTIONS (🔥 FIXED)
-      restrictions: data.restrictions
-        ? JSON.parse(JSON.stringify(data.restrictions))
-        : undefined,
+      /// RESTRICTIONS
+      restrictions: data.restrictions ?? undefined,
 
-      /// ⏰ AVAILABILITY
+      /// AVAILABILITY
       availableFrom: data.availableFrom
         ? new Date(data.availableFrom)
         : undefined,
@@ -105,7 +103,6 @@ export class PropertyService {
     },
   });
 }
-
   /*
   ============================
   STEP 3 — AMENITIES
