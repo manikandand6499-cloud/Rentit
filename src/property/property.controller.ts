@@ -185,10 +185,12 @@ updateContact(
   GET ALL
   ==============================
   */
-  @Get('all')
-  getAllProperties() {
-    return this.propertyService.getAllProperties();
-  }
+ @Get('all')
+getAllProperties(@Req() req) {
+  const userId = req.user.userId;
+
+  return this.propertyService.getAllProperties(userId);
+}
 
   /*
   ==============================

@@ -224,12 +224,21 @@ export class PropertyService {
   GET METHODS
   ============================
   */
-  async getAllProperties() {
-    return this.prisma.property.findMany({
-      where: { isDeleted: false },
-      orderBy: { createdAt: "desc" },
-    });
-  }
+  async getAllProperties(userId: number) {
+  return this.prisma.property.findMany({
+    where: {
+      isDeleted: false,
+
+      // 🔥 MAIN FIX
+      userId: {
+        not: userId,
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
 
   async getMyProperties(userId: number) {
     return this.prisma.property.findMany({
