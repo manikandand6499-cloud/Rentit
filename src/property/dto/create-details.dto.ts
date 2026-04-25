@@ -6,12 +6,14 @@ import {
   IsArray,
   IsBoolean,
   ValidateNested,
+  IsNotEmpty,
 } from "class-validator";
 import { Type } from "class-transformer";
 
 class RoomDto {
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   sharing?: string;
 
   @IsOptional()
@@ -54,34 +56,54 @@ class RestrictionsDto {
 }
 
 export class CreateDetailsDto {
+
   /// BASIC
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   propertyName?: string;
 
   /// PREFERENCES
-  @IsOptional() @IsArray() @IsString({ each: true })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
   preferredTenant?: string[];
 
-  @IsOptional() @IsArray() @IsString({ each: true })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
   preferredGuests?: string[];
 
+
+
+
+
   /// LOCATION
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   city?: string;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   street?: string;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   locality?: string;
 
-  @IsOptional() @IsString()
+  // ✅ FIX (important)
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   landmark?: string;
 
-  @IsOptional() @Type(() => Number) @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   latitude?: number;
 
-  @IsOptional() @Type(() => Number) @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   longitude?: number;
 
   /// ROOM
@@ -92,7 +114,8 @@ export class CreateDetailsDto {
   roomType?: RoomDto[];
 
   /// FOOD
-  @IsOptional() @IsBoolean()
+  @IsOptional()
+  @IsBoolean()
   foodIncluded?: boolean;
 
   @IsOptional()
@@ -101,7 +124,8 @@ export class CreateDetailsDto {
   foodType?: FoodTypeDto;
 
   /// PARKING
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   parking?: string;
 
   /// AMENITIES
@@ -117,16 +141,20 @@ export class CreateDetailsDto {
   restrictions?: RestrictionsDto;
 
   /// AVAILABILITY
-  @IsOptional() @IsDateString()
+  @IsOptional()
+  @IsDateString()
   availableFrom?: string;
 
-  @IsOptional() @Type(() => Number) @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   noticePeriod?: number;
 
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   gateClosingTime?: string;
 
-  /// ✅ ADD THIS (FIX)
+  /// STEP TRACKING
   @IsOptional()
   @Type(() => Number)
   @IsNumber()

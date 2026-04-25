@@ -1,55 +1,56 @@
-// import {
-//   IsOptional,
-//   IsNumber,
-//   IsBoolean,
-//   IsString,
-//   IsArray
-// } from "class-validator";
+import {
+  IsOptional,
+  IsString,
+  IsArray,
+  IsBoolean,
+  ValidateNested,
+} from "class-validator";
+import { Type } from "class-transformer";
 
-// import { Type } from "class-transformer";
+/// ================= ROOM =================
+export class RoomDto {
+  @IsOptional()
+  @IsString()
+  sharing?: string;
 
-// export class CreateRentDto {
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  amenities?: string[];
+}
 
-//   @IsString()
-//   rentType: string;   // ⬅️⬅️ MAIN FIX
+/// ================= FOOD =================
+export class FoodTypeDto {
+  @IsOptional()
+  @IsBoolean()
+  breakfast?: boolean;
 
-//   @Type(() => Number)
-//   @IsNumber()
-//   expectedRent: number;
+  @IsOptional()
+  @IsBoolean()
+  lunch?: boolean;
 
-//   @Type(() => Number)
-//   @IsNumber()
-//   deposit: number;
+  @IsOptional()
+  @IsBoolean()
+  dinner?: boolean;
+}
 
-// @IsOptional()
-// @Type(() => Number)
-// @IsNumber()
-// maintenanceAmount?: number;
+/// ================= PG AMENITIES =================
+export class AmenitiesDto {
+  @IsOptional() @IsBoolean() laundry?: boolean;
+  @IsOptional() @IsBoolean() roomCleaning?: boolean;
+  @IsOptional() @IsBoolean() wifi?: boolean;
+  @IsOptional() @IsBoolean() commonTV?: boolean;
+  @IsOptional() @IsBoolean() lift?: boolean;
+  @IsOptional() @IsBoolean() powerBackup?: boolean;
+  @IsOptional() @IsBoolean() refrigerator?: boolean;
+  @IsOptional() @IsBoolean() mess?: boolean;
+}
 
-//   @IsOptional()
-//   @IsBoolean()
-//   rentNegotiable?: boolean;
-
-//   @IsOptional()
-//   @IsString()
-//   maintenance?: string;
-
-//   @IsOptional()
-//   @IsString()
-//   availableFrom?: string;
-
-//   @IsOptional()
-//   @IsArray()
-//   @IsString({ each: true })
-//   preferredTenant?: string[];
-
-//   @IsOptional()
-//   furnishing?: any;
-
-//   @IsOptional()
-//   parking?: any;
-
-//   @IsOptional()
-//   @IsString()
-//   description?: string;
-// }
+/// ================= RESTRICTIONS =================
+export class RestrictionsDto {
+  @IsOptional() @IsBoolean() smoking?: boolean;
+  @IsOptional() @IsBoolean() drinking?: boolean;
+  @IsOptional() @IsBoolean() loudMusic?: boolean;
+  @IsOptional() @IsBoolean() nonVegAllowed?: boolean;
+  @IsOptional() @IsBoolean() girlsEntry?: boolean;
+}

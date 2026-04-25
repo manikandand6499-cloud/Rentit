@@ -43,56 +43,54 @@ export class PropertyService {
   STEP 2 — DETAILS
   ============================
   */
- async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
+async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
   await this.checkPropertyOwner(id, userId);
 
-  console.log("ROOM TYPE:", data.roomType);
-  console.log("LANDMARK:", data.landmark);
+  console.log("BODY:", data);
 
   return this.prisma.property.update({
     where: { id },
     data: {
-      /// LOCATION
       city: data.city ?? undefined,
       street: data.street ?? undefined,
       locality: data.locality ?? undefined,
 
-      // ✅ FIXED
-      landmark: data.landmark?.trim() || undefined,
+      // ✅ CLEAN STRING FIX
+      landmark:
+        data.landmark && data.landmark.trim() !== ""
+          ? data.landmark.trim()
+          : undefined,
 
       latitude: data.latitude ?? undefined,
       longitude: data.longitude ?? undefined,
 
-      /// BASIC
       propertyName: data.propertyName ?? undefined,
 
-      /// PREFERENCES
       preferredGuests: data.preferredGuests ?? undefined,
       preferredTenant: data.preferredTenant ?? undefined,
 
-      /// ROOM ✅ SAFE FIX
-      roomType: Array.isArray(data.roomType) && data.roomType.length > 0
-        ? data.roomType
+      // 🔥 FIXED JSON FIELDS
+      roomType:
+        Array.isArray(data.roomType) && data.roomType.length > 0
+          ? (data.roomType as any)
+          : undefined,
+
+      foodType: data.foodType ? (data.foodType as any) : undefined,
+
+      pgAmenities: data.pgAmenities
+        ? (data.pgAmenities as any)
         : undefined,
 
-      /// FOOD
-      foodIncluded: data.foodIncluded ?? undefined,
-      foodType: data.foodType ?? undefined,
+      restrictions: data.restrictions
+        ? (data.restrictions as any)
+        : undefined,
 
-      /// PARKING
-      parking: data.parking ?? undefined,
-
-      /// AMENITIES
-      pgAmenities: data.pgAmenities ?? undefined,
-
-      /// RESTRICTIONS
-      restrictions: data.restrictions ?? undefined,
-
-      /// AVAILABILITY
       availableFrom: data.availableFrom
         ? new Date(data.availableFrom)
         : undefined,
 
+      foodIncluded: data.foodIncluded ?? undefined,
+      parking: data.parking ?? undefined,
       noticePeriod: data.noticePeriod ?? undefined,
 
       gateClosingTime: data.gateClosingTime
