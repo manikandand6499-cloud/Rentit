@@ -7,6 +7,7 @@ import {
   Query,
   Param,
   ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { AiService } from './ai.service';
 
@@ -16,6 +17,7 @@ export class AiController {
 
   // 🔍 Main multilingual search
   @Post('search')
+  @HttpCode(200)   // ← Force 200 instead of NestJS default 201 for POST
   search(@Body() body: { query: string }) {
     return this.aiService.search(body.query);
   }
