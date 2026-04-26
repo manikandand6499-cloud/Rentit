@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
+import { ConfigModule } from "@nestjs/config";
 
 import { PrismaModule } from "../prisma/prisma.module";
 import { AuthModule } from "./auth/auth.module";
@@ -10,21 +11,32 @@ import { PaymentModule } from "./payment/payment.module";
 import { VisitModule } from "./visit/visit.module";
 import { ChatModule } from "./chat/chat.module";
 import { IvrModule } from "./ivr/ivr.module";
+import { AiModule } from "./ai/ai.module"; // 🔥 ADD THIS
 
 @Module({
   imports: [
-    // 🔥 SCHEDULER FIRST (best practice)
+    /// 🔥 ENV CONFIG (VERY IMPORTANT)
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
+    /// 🔥 SCHEDULER
     ScheduleModule.forRoot(),
 
+    /// 🔥 CORE MODULES
     PrismaModule,
+
     AuthModule,
+    UserModule,
     PropertyModule,
     LikeModule,
-    UserModule,
     PaymentModule,
     VisitModule,
     ChatModule,
-    IvrModule, // ✅ IVR included
+    IvrModule,
+
+    /// 🧠 AI MODULE (NEW)
+    AiModule,
   ],
 })
 export class AppModule {}

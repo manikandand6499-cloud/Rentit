@@ -107,7 +107,6 @@ model Property {
   id     Int @id @default(autoincrement())
   userId Int
 
-  // 📍 BASIC INFO
   city      String
   locality  String
   street    String?
@@ -115,56 +114,60 @@ model Property {
   latitude  Float?
   longitude Float?
 
-  // 🏠 PROPERTY INFO
   propertyName String?
   propertyType String
 
-  // 🛏 ROOM DETAILS
   roomType Json?
 
-  // 🍽 FACILITIES
   foodIncluded Boolean?
   foodType     Json?
-
   pgAmenities  Json?
 
   parking String?
 
-  // ⏰ AVAILABILITY
+  /// 🔥 ADD THIS
+  price Int?
+
+  /// 🔥 AI + ranking
+  isVerified Boolean @default(false)
+  boostScore Int @default(0)
+  viewCount  Int @default(0)
+
   availableFrom   DateTime?
   noticePeriod    Int?
   gateClosingTime DateTime?
 
-  // 📸 MEDIA
   images String[] @default([])
   video  String?
 
-  // 📞 CONTACT
   contactName     String?
   mobileNo        String?
   whatsapp        Boolean?
   whatsappupdates Boolean?
 
-  // 👥 PREFERENCES
   preferredTenant Json?
   preferredGuests Json?
 
-  // 🔒 OTHER
   restrictions        Json?
   propertyDescription String?
 
-  // ⚙️ SYSTEM
   currentStep Int      @default(1)
   isDraft     Boolean  @default(true)
   isDeleted   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // 🔗 RELATIONS
-  user   User    @relation(fields: [userId], references: [id])
-  likes  Like[]
-  visits Visit[]
+  user     User    @relation(fields: [userId], references: [id])
+  likes    Like[]
+  visits   Visit[]
   messages Message[] @relation("PropertyMessages")
+
+  /// 🔥 INDEXES
+  @@index([city])
+  @@index([locality])
+  @@index([propertyType])
+  @@index([foodIncluded])
+  @@index([latitude, longitude])
 }
 
 model Message {
