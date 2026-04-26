@@ -16,6 +16,18 @@ class RoomDto {
   @IsNotEmpty()
   sharing?: string;
 
+  // ✅ ADD THIS
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  rent?: number;
+
+  // ✅ ADD THIS
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  deposit?: number;
+
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
