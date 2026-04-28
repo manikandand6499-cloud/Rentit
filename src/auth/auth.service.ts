@@ -17,6 +17,7 @@ export class AuthService {
     );
   }
 
+  // 📩 SEND OTP
   async sendOtp(mobile: string) {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -30,24 +31,30 @@ export class AuthService {
     await this.prisma.otp.create({
       data: {
         mobile,
-        otp,
+        otp, // ✅ FIXED
         expiresAt,
       },
     });
 
+    
+
     // send sms using Twilio
     await this.twilioClient.messages.create({
-      body: `your otp  : ${otp}`,
+      body: `Your OTP is: ${otp}`,
       from: process.env.TWILIO_PHONE_NUMBER,
-      to: `+91${mobile}`,   // India format
+      to: `+91${mobile}`,
     });
 
-    return { message: "OTP is  sent the successfully" };
+    return { message: "OTP sent successfully" };
   }
 
+  // 🔐 VERIFY OTP
   async verifyOtp(mobile: string, otp: string) {
     const record = await this.prisma.otp.findFirst({
-      where: { mobile, otp },
+      where: {
+        mobile,
+        code: otp, // ✅ FIXED
+      },
     });
 
     if (!record) {
