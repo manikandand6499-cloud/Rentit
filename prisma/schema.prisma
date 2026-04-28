@@ -41,6 +41,13 @@ model Subscription {
   user User @relation(fields: [userId], references: [id])
 }
 
+model Otp {
+  id        Int      @id @default(autoincrement())
+  mobile    String
+  code      String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
 
 model Like {
   id         Int      @id @default(autoincrement())
