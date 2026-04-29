@@ -48,6 +48,8 @@ export class AiService {
   // ─────────────────────────────────────────────
   // 🎤 AUDIO → TEXT → SEARCH
   // ─────────────────────────────────────────────
+
+  
  async processAudio(file: Express.Multer.File) {
   const text = await this.speechToText(file);
 
@@ -60,34 +62,41 @@ export class AiService {
   };
 }
 
+
+
+
   // ─────────────────────────────────────────────
   // 🎤 Speech to Text (OpenAI Whisper)
   // ─────────────────────────────────────────────
-  async speechToText(file: Express.Multer.File): Promise<string> {
-    try {
-      const form = new FormData();
-      form.append('file', file.buffer, 'audio.wav');
 
-      const res = await axios.post(
-        'https://api.openai.com/v1/audio/transcriptions',
-        form,
-        {
-          headers: {
-            ...form.getHeaders(),
-            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          },
-          params: {
-            model: 'gpt-4o-transcribe',
-          },
+  
+ async speechToText(file: Express.Multer.File): Promise<string> {
+  try {
+    const form = new FormData();
+    form.append('file', file.buffer, 'audio.wav');
+
+    const res = await axios.post(
+      'https://api.openai.com/v1/audio/transcriptions',
+      form,
+      {
+        headers: {
+          ...form.getHeaders(),
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         },
-      );
+        params: {
+          model: 'gpt-4o-transcribe',
+        },
+        timeout: 15000,
+      }
+    );
 
-      return res.data.text || '';
-    } catch (err: any) {
-      console.error('❌ STT Error:', err?.message);
-      return '';
-    }
+    return res.data.text || '';
+  } catch (err) {
+    const message = err instanceof Error ? err.message : JSON.stringify(err);
+    console.error('❌ STT Error:', message);
+    return '';
   }
+}
 
   
 
