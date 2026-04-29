@@ -1,3 +1,4 @@
+// src/ai/ai.controller.ts
 import {
   Controller,
   Post,
@@ -7,36 +8,21 @@ import {
   Param,
   ParseIntPipe,
   HttpCode,
-  UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { AiService } from './ai.service';
-import { memoryStorage } from 'multer';
 
 @Controller('ai')
 export class AiController {
   constructor(private aiService: AiService) {}
 
-
-
-  @Post('transcribe')
-@UseInterceptors(
-  FileInterceptor('file', {
-    storage: memoryStorage(), // ✅ CRITICAL FIX
-  }),
-)
-async transcribe(@UploadedFile() file: Express.Multer.File) {
-  return this.aiService.processAudio(file);
-}
-
   // 🔍 Main multilingual search
   @Post('search')
-  @HttpCode(200)
+  @HttpCode(200)   // ← Force 200 instead of NestJS default 201 for POST
   search(@Body() body: { query: string }) {
     return this.aiService.search(body.query);
   }
 
+  // 🌟 Recommended PGs for a city
   @Get('recommendations')
   recommendations(
     @Query('city') city: string,
@@ -50,20 +36,21 @@ async transcribe(@UploadedFile() file: Express.Multer.File) {
     );
   }
 
+  // 🔥 Trending PGs
   @Get('trending')
   trending(@Query('city') city?: string) {
     return this.aiService.getTrending(city);
   }
 
+  // 🏠 Similar PGs
   @Get('similar/:id')
   similar(@Param('id', ParseIntPipe) id: number) {
     return this.aiService.getSimilar(id);
   }
 
+  // 👁 Track view
   @Post('view/:id')
   view(@Param('id', ParseIntPipe) id: number) {
     return this.aiService.incrementView(id);
   }
-
-  
 }
