@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 
 import { FilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { ParseIntPipe } from '@nestjs/common';
 
 import { PropertyService } from './property.service';
 import { CreateBasicDto } from './dto/create-basic.dto';
@@ -192,6 +193,8 @@ getAllProperties(@Req() req) {
   return this.propertyService.getAllProperties(userId);
 }
 
+
+
   /*
   ==============================
   MY PROPERTIES
@@ -207,10 +210,12 @@ getAllProperties(@Req() req) {
   SINGLE PROPERTY
   ==============================
   */
+ 
+
   @Get(':id')
-  getProperty(@Param('id') id: string) {
-    return this.propertyService.getProperty(Number(id));
-  }
+getProperty(@Param('id', ParseIntPipe) id: number) {
+  return this.propertyService.getProperty(id);
+}
 
   /*
   ==============================

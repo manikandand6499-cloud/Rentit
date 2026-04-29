@@ -242,15 +242,21 @@ async updateDetails(id: number, userId: number, data: CreateDetailsDto) {
     });
   }
 
-  async getProperty(id: number) {
-    const property = await this.prisma.property.findUnique({
-      where: { id },
-    });
-
-    if (!property) throw new NotFoundException("Property not found");
-
-    return property;
+ async getProperty(id?: number) {
+  if (!id || isNaN(id)) {
+    throw new NotFoundException("Invalid property ID");
   }
+
+  const property = await this.prisma.property.findUnique({
+    where: { id },
+  });
+
+  if (!property) {
+    throw new NotFoundException("Property not found");
+  }
+
+  return property;
+}
 
   /*
   ============================
