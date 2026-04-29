@@ -48,25 +48,17 @@ export class AiService {
   // ─────────────────────────────────────────────
   // 🎤 AUDIO → TEXT → SEARCH
   // ─────────────────────────────────────────────
-  async processAudio(file: Express.Multer.File) {
-    const text = await this.speechToText(file);
+ async processAudio(file: Express.Multer.File) {
+  const text = await this.speechToText(file);
 
-    if (!text) {
-      return {
-        text: '',
-        results: [],
-        count: 0,
-        summary: 'Could not understand audio',
-      };
-    }
+  // reuse your existing AI search
+  const result = await this.search(text);
 
-    const result = await this.search(text);
-
-    return {
-      text,
-      ...result,
-    };
-  }
+  return {
+    text,
+    ...result,
+  };
+}
 
   // ─────────────────────────────────────────────
   // 🎤 Speech to Text (OpenAI Whisper)
@@ -96,6 +88,8 @@ export class AiService {
       return '';
     }
   }
+
+  
 
   // ─────────────────────────────────────────────
   // 🔍 MAIN SEARCH
