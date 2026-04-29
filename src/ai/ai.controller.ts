@@ -12,17 +12,23 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AiService } from './ai.service';
+import { memoryStorage } from 'multer';
 
 @Controller('ai')
 export class AiController {
   constructor(private aiService: AiService) {}
 
-  // 🎤 NEW — Speech to text + AI search
+
+
   @Post('transcribe')
-  @UseInterceptors(FileInterceptor('file'))
-  async transcribe(@UploadedFile() file: Express.Multer.File) {
-    return this.aiService.processAudio(file);
-  }
+@UseInterceptors(
+  FileInterceptor('file', {
+    storage: memoryStorage(), // ✅ CRITICAL FIX
+  }),
+)
+async transcribe(@UploadedFile() file: Express.Multer.File) {
+  return this.aiService.processAudio(file);
+}
 
   // 🔍 Main multilingual search
   @Post('search')

@@ -4,11 +4,26 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { PrismaService } from 'prisma/prisma.service';
 import FormData from 'form-data';
+import OpenAI from 'openai';
+import * as fs from 'fs';
 
 const GEMINI_URL =
   `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent`;
 
 const SUPPORTED_CITIES = ['Chennai', 'Coimbatore', 'Hyderabad', 'Bangalore'];
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+async function transcribe(filePath: string) {
+  const response = await openai.audio.transcriptions.create({
+    file: fs.createReadStream(filePath),
+    model: "gpt-4o-transcribe", // 🔥 VERY IMPORTANT
+  });
+
+  return response.text;
+}
 
 // ─────────────────────────────────────────────
 // 🔹 Gemini Call Helper
@@ -81,6 +96,8 @@ export class AiService {
       ...result,
     };
   }
+
+ 
 
   // ─────────────────────────────────────────────
   // 🎤 Speech to Text (OpenAI Whisper) — FIXED
