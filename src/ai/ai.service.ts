@@ -48,57 +48,89 @@ export class AiService {
   // ─────────────────────────────────────────────
   // 🎤 AUDIO → TEXT → SEARCH
   // ─────────────────────────────────────────────
+  async processAudio(file: Express.Multer.File) {
+    // Guard: reject empty uploads
+    if (!file || !file.buffer || file.buffer.length < 1000) {
+      return {
+        text: '',
+        query: '',
+        filters: {},
+        results: [],
+        count: 0,
+        summary: 'No audio received',
+      };
+    }
 
-  
- async processAudio(file: Express.Multer.File) {
-  const text = await this.speechToText(file);
+    const text = await this.speechToText(file);
 
-  // reuse your existing AI search
-  const result = await this.search(text);
+    if (!text) {
+      return {
+        text: '',
+        query: '',
+        filters: {},
+        results: [],
+        count: 0,
+        summary: 'Could not transcribe audio — speak clearly and try again',
+      };
+    }
 
-  return {
-    text,
-    ...result,
-  };
-}
+    const result = await this.search(text);
 
-
-
-
-  // ─────────────────────────────────────────────
-  // 🎤 Speech to Text (OpenAI Whisper)
-  // ─────────────────────────────────────────────
-
-  
- async speechToText(file: Express.Multer.File): Promise<string> {
-  try {
-    const form = new FormData();
-    form.append('file', file.buffer, 'audio.wav');
-
-    const res = await axios.post(
-      'https://api.openai.com/v1/audio/transcriptions',
-      form,
-      {
-        headers: {
-          ...form.getHeaders(),
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
-        params: {
-          model: 'gpt-4o-transcribe',
-        },
-        timeout: 15000,
-      }
-    );
-
-    return res.data.text || '';
-  } catch (err) {
-    const message = err instanceof Error ? err.message : JSON.stringify(err);
-    console.error('❌ STT Error:', message);
-    return '';
+    return {
+      text,   // ← Flutter reads this to show in search bar
+      ...result,
+    };
   }
-}
 
-  
+  // ─────────────────────────────────────────────
+  // 🎤 Speech to Text (OpenAI Whisper) — FIXED
+  // ─────────────────────────────────────────────
+  async speechToText(file: Express.Multer.File): Promise<string> {
+    try {
+      const form = new FormData();
+
+      // ✅ FIX 1: append buffer with filename + correct MIME type
+      //    Flutter sends .m4a  →  MIME = audio/mp4
+      //    Whisper accepts: mp3, mp4, mpeg, mpga, m4a, wav, webm
+      form.append('file', file.buffer, {
+        filename:    file.originalname ?? 'audio.m4a',
+        contentType: file.mimetype     ?? 'audio/mp4',
+      });
+
+      // ✅ FIX 2: model MUST be a form field — NOT a query param
+      form.append('model', 'whisper-1');
+
+      // ✅ FIX 3: response_format json gives { text: "..." }
+      form.append('response_format', 'json');
+
+      // Optional language hint — remove to keep auto-detect (better for multilingual)
+      // form.append('language', 'en');
+
+      const res = await axios.post(
+        'https://api.openai.com/v1/audio/transcriptions',
+        form,
+        {
+          headers: {
+            ...form.getHeaders(),
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          },
+          // ✅ FIX 4: NO params block — model is already inside the form above
+          maxBodyLength: 25 * 1024 * 1024, // 25 MB safety limit
+          timeout: 30000,                   // 30 s
+        },
+      );
+
+      const text = (res.data?.text ?? '').trim();
+      console.log('✅ Whisper transcript:', text);
+      return text;
+
+    } catch (err: any) {
+      // Log full OpenAI error detail for debugging
+      const detail = err?.response?.data ?? err?.message ?? String(err);
+      console.error('❌ STT Error:', JSON.stringify(detail, null, 2));
+      return '';
+    }
+  }
 
   // ─────────────────────────────────────────────
   // 🔍 MAIN SEARCH
@@ -169,7 +201,7 @@ Query: "${query}"
         delete parsed.city;
       }
 
-      // Clean locality
+      // Clean locality — strip Tamil/Hindi suffixes like "la", "mein", "lo"
       if (parsed.locality) {
         parsed.locality = parsed.locality
           .replace(/\s+(la|le|lo|mein|near)$/i, '')
@@ -179,7 +211,7 @@ Query: "${query}"
       return parsed;
     } catch (err: any) {
       console.error('❌ Gemini Error:', err?.message);
-      return { propertyType: 'pg' }; // fallback fix
+      return { propertyType: 'pg' };
     }
   }
 
@@ -193,7 +225,7 @@ Query: "${query}"
       propertyType: { in: ['pg', 'PG', 'hostel'] },
     };
 
-    // TIER 1
+    // TIER 1 — all filters applied
     const t1 = await this.prisma.property.findMany({
       where: this.buildWhere(filters, base),
       orderBy: { createdAt: 'desc' },
@@ -201,7 +233,7 @@ Query: "${query}"
     });
     if (t1.length) return t1;
 
-    // TIER 2
+    // TIER 2 — location only
     if (filters.city || filters.locality) {
       const t2 = await this.prisma.property.findMany({
         where: { ...base, OR: this.locationOr(filters) },
@@ -210,24 +242,21 @@ Query: "${query}"
       if (t2.length) return t2;
     }
 
-    // TIER 3
+    // TIER 3 — keyword scan on city/locality
     const words = rawQuery.split(' ').filter((w) => w.length > 3);
-
     if (words.length) {
       const or = words.flatMap((w) => [
-        { city: { contains: w } },
-        { locality: { contains: w } },
+        { city:     { contains: w, mode: 'insensitive' as const } },
+        { locality: { contains: w, mode: 'insensitive' as const } },
       ]);
-
       const t3 = await this.prisma.property.findMany({
         where: { ...base, OR: or },
         take: 20,
       });
-
       if (t3.length) return t3;
     }
 
-    // TIER 4
+    // TIER 4 — return latest 20
     return this.prisma.property.findMany({
       where: base,
       orderBy: { createdAt: 'desc' },
@@ -243,7 +272,7 @@ Query: "${query}"
     }
 
     if (filters.foodIncluded) where.foodIncluded = true;
-    if (filters.maxPrice) where.price = { lte: filters.maxPrice };
+    if (filters.maxPrice)     where.price = { lte: filters.maxPrice };
     if (filters.roomType?.length) {
       where.roomType = { array_contains: filters.roomType };
     }
@@ -257,7 +286,6 @@ Query: "${query}"
     if (filters.city) {
       or.push({ city: { contains: filters.city, mode: 'insensitive' } });
     }
-
     if (filters.locality) {
       or.push({ locality: { contains: filters.locality, mode: 'insensitive' } });
     }
@@ -272,9 +300,8 @@ Query: "${query}"
     if (!count) return 'No results found';
 
     const parts: string[] = [];
-
     if (filters.roomType) parts.push(filters.roomType.join('/'));
-    if (filters.city) parts.push(filters.city);
+    if (filters.city)     parts.push(filters.city);
     if (filters.maxPrice) parts.push(`₹${filters.maxPrice}`);
 
     return `${count} PGs · ${parts.join(' · ')}`;
@@ -283,7 +310,6 @@ Query: "${query}"
   // ─────────────────────────────────────────────
   // 🌟 OTHER APIs
   // ─────────────────────────────────────────────
-
   async getRecommendations(city: string, budget?: number, gender?: string | undefined) {
     return this.prisma.property.findMany({
       where: {
@@ -310,7 +336,7 @@ Query: "${query}"
     return this.prisma.property.findMany({
       where: {
         city: p.city,
-        id: { not: id },
+        id:   { not: id },
       },
       take: 6,
     });
