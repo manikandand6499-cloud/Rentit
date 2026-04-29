@@ -58,4 +58,6 @@ export class AiController {
   view(@Param('id', ParseIntPipe) id: number) {
     return this.aiService.incrementView(id);
   }
+
+  
 }
