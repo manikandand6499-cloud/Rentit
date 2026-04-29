@@ -1,4 +1,5 @@
 // src/ai/ai.controller.ts
+
 import {
   Controller,
   Post,
@@ -15,14 +16,19 @@ import { AiService } from './ai.service';
 export class AiController {
   constructor(private aiService: AiService) {}
 
-  // 🔍 Main multilingual search
+  // 🔍 Main multilingual search (USED BY APP)
   @Post('search')
-  @HttpCode(200)   // ← Force 200 instead of NestJS default 201 for POST
-  search(@Body() body: { query: string }) {
-    return this.aiService.search(body.query);
+  @HttpCode(200)
+  async search(@Body('query') query: string) {
+    const result = await this.aiService.processWithGemini(query);
+
+    return {
+      success: true,
+      ...result,
+    };
   }
 
-  // 🌟 Recommended PGs for a city
+  // 🌟 Recommended PGs
   @Get('recommendations')
   recommendations(
     @Query('city') city: string,

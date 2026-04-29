@@ -1437,6 +1437,24 @@ Generate exactly 6 items.`;
     return this.prisma.property.findMany({ where, orderBy: { createdAt: 'desc' }, take: 10 });
   }
 
+
+    async processWithGemini(query: string) {
+    // 🔥 Dummy logic (replace with Gemini)
+    return {
+      filters: {
+        city: 'Chennai',
+        locality: 'OMR',
+        roomType: 'Double',
+        maxPrice: 8000,
+      },
+      originalQuery: query,
+    };
+  }
+
+
+
+
+
   // ─────────────────────────────────────────────────────────────────────
   // 🔥 TRENDING
   // ─────────────────────────────────────────────────────────────────────

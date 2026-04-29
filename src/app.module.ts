@@ -12,6 +12,7 @@ import { VisitModule } from "./visit/visit.module";
 import { ChatModule } from "./chat/chat.module";
 import { IvrModule } from "./ivr/ivr.module";
 import { AiModule } from "./ai/ai.module"; // 🔥 ADD THIS
+import { SpeechModule } from "./speech/speech.module";
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AiModule } from "./ai/ai.module"; // 🔥 ADD THIS
 
     /// 🧠 AI MODULE (NEW)
     AiModule,
+    SpeechModule,
   ],
 })
 export class AppModule {}
