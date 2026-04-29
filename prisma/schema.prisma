@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  mobile            String   @unique
+  createdAt         DateTime @default(now())
+  email             String?
+  isProfileComplete Boolean  @default(false)
+  name              String?
+
+  likes         Like[]
+  properties    Property[]
+  subscriptions Subscription[]
+  visits        Visit[]
+
+  /// ✅ CORRECT
+  sentMessages     Message[] @relation("Sender")
+  receivedMessages Message[] @relation("Receiver")
+}
+
+model Subscription {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  planType     String
+  planDuration String
+  amount       Int
+  paymentId    String
+  propertyType String
+  startDate    DateTime
+  expiryDate   DateTime
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Otp {
+  id        Int      @id @default(autoincrement())
+  mobile    String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  propertyId Int
+  createdAt  DateTime @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, propertyId])
+}
+
+model Visit {
+  id       Int         @id @default(autoincrement())
+
+  // 🔁 TEMP: keep old fields during migration
+  date String?
+  time String?
+
+  // ✅ NEW FIELD (optional for now)
+  visitDateTime DateTime?
+
+  status VisitStatus @default(pending)
+
+  language String      @default("en")
+  isCalled Boolean     @default(false)
+
+  userId     Int
+  propertyId Int
+
+  user     User     @relation(fields: [userId], references: [id])
+  property Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([status])
+
+  // ⚠️ keep old unique during migration (if you had it)
+  // @@unique([propertyId, date, time])
+
+  // ❗ Add this AFTER migration completes
+  // @@unique([propertyId, visitDateTime])
+}
+
+enum VisitStatus {
+  pending
+  confirmed
+  calling
+  cancelled
+  completed
+}
+
+model Property {
+  id     Int @id @default(autoincrement())
+  userId Int
+
+  city      String
+  locality  String
+  street    String?
+  landmark  String?
+  latitude  Float?
+  longitude Float?
+
+  propertyName String?
+  propertyType String
+
+  roomType Json?
+
+  foodIncluded Boolean?
+  foodType     Json?
+  pgAmenities  Json?
+
+  parking String?
+
+  /// 🔥 ADD THIS
+  price Int?
+
+  /// 🔥 AI + ranking
+  isVerified Boolean @default(false)
+  boostScore Int @default(0)
+  viewCount  Int @default(0)
+
+  availableFrom   DateTime?
+  noticePeriod    Int?
+  gateClosingTime DateTime?
+
+  images String[] @default([])
+  video  String?
+
+  contactName     String?
+  mobileNo        String?
+  whatsapp        Boolean?
+  whatsappupdates Boolean?
+
+  preferredTenant Json?
+  preferredGuests Json?
+
+  restrictions        Json?
+  propertyDescription String?
+
+  currentStep Int      @default(1)
+  isDraft     Boolean  @default(true)
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User    @relation(fields: [userId], references: [id])
+  likes    Like[]
+  visits   Visit[]
+  messages Message[] @relation("PropertyMessages")
+
+  /// 🔥 INDEXES
+  @@index([city])
+  @@index([locality])
+  @@index([propertyType])
+  @@index([foodIncluded])
+  @@index([latitude, longitude])
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  senderId    Int
+  receiverId  Int
+  propertyId  Int
+  message     String
+  createdAt   DateTime @default(now())
+
+  sender   User     @relation("Sender", fields: [senderId], references: [id])
+  receiver User     @relation("Receiver", fields: [receiverId], references: [id])
+  property Property @relation("PropertyMessages", fields: [propertyId], references: [id])
+
+  @@index([propertyId])
+  @@index([senderId])
+  @@index([receiverId])
+}
