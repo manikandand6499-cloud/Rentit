@@ -10,7 +10,6 @@
 //
 // Add to app.module.ts:
 //   imports: [SpeechModule]
-
 import { Module, Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
@@ -71,20 +70,13 @@ interface SessionState {
   startedAt: Date;
 }
 
-@WebSocketGateway({
-  namespace: '/speech',
-  cors: { origin: '*', credentials: true },
-  transports: ['websocket', 'polling'],
-})
 export class SpeechGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server: Server | undefined;
+  server: Server | undefined;
   private readonly logger = new Logger(SpeechGateway.name);
 
   // Per-socket sessions map
   private readonly sessions = new Map<string, SessionState>();
 
-  // Google streaming timeout is ~5 min — auto-restart warning at 4:30
-  private readonly SESSION_WARN_MS = 4.5 * 60 * 1000;
 
   constructor(private readonly speechService: SpeechService) {}
 
@@ -98,10 +90,8 @@ export class SpeechGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // ── START STREAM ───────────────────────────
-  @SubscribeMessage('start_stream')
   handleStartStream(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
+    client: Socket,
     payload: {
       language?: string;
       model?: SpeechModel;
@@ -208,10 +198,9 @@ export class SpeechGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // ── AUDIO CHUNK ────────────────────────────
-  @SubscribeMessage('audio_chunk')
   handleAudioChunk(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() chunk: Buffer | ArrayBuffer | string,
+    client: Socket,
+    chunk: Buffer | ArrayBuffer | string,
   ) {
     const session = this.sessions.get(client.id);
     if (!session?.recognizeStream) {
@@ -244,8 +233,7 @@ export class SpeechGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // ── STOP STREAM ────────────────────────────
-  @SubscribeMessage('stop_stream')
-  handleStopStream(@ConnectedSocket() client: Socket) {
+  handleStopStream(client: Socket) {
     const session = this.sessions.get(client.id);
     if (!session) {
       client.emit('stream_ended', { finalTranscript: '', wordCount: 0 });
@@ -284,6 +272,43 @@ export class SpeechGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.sessions.delete(socketId);
   }
 }
+
+function applyMethodDecorator(target: any, propertyKey: string, decorator: MethodDecorator) {
+  const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
+  if (!descriptor) return;
+
+  const result = decorator(target, propertyKey, descriptor);
+  if (result) {
+    Object.defineProperty(target, propertyKey, result);
+  }
+}
+
+function applyPropertyDecorator(target: any, propertyKey: string, decorator: PropertyDecorator) {
+  decorator(target, propertyKey);
+}
+
+function applyParameterDecorator(target: any, propertyKey: string, parameterIndex: number, decorator: ParameterDecorator) {
+  decorator(target, propertyKey, parameterIndex);
+}
+
+WebSocketGateway({
+  namespace: '/speech',
+  cors: { origin: '*', credentials: true },
+  transports: ['websocket', 'polling'],
+})(SpeechGateway);
+
+applyPropertyDecorator(SpeechGateway.prototype, 'server', WebSocketServer());
+
+applyMethodDecorator(SpeechGateway.prototype, 'handleStartStream', SubscribeMessage('start_stream'));
+applyParameterDecorator(SpeechGateway.prototype, 'handleStartStream', 0, ConnectedSocket());
+applyParameterDecorator(SpeechGateway.prototype, 'handleStartStream', 1, MessageBody());
+
+applyMethodDecorator(SpeechGateway.prototype, 'handleAudioChunk', SubscribeMessage('audio_chunk'));
+applyParameterDecorator(SpeechGateway.prototype, 'handleAudioChunk', 0, ConnectedSocket());
+applyParameterDecorator(SpeechGateway.prototype, 'handleAudioChunk', 1, MessageBody());
+
+applyMethodDecorator(SpeechGateway.prototype, 'handleStopStream', SubscribeMessage('stop_stream'));
+applyParameterDecorator(SpeechGateway.prototype, 'handleStopStream', 0, ConnectedSocket());
 
 // ─────────────────────────────────────────────
 // MODULE

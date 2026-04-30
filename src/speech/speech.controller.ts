@@ -2,18 +2,18 @@
 import {
   Controller,
   Post,
-  UploadedFile,
   UseInterceptors,
   Body,
   BadRequestException,
   Get,
+  UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import * as speechService_1 from './speech.service';
+import { SpeechService, AudioEncoding, SpeechModel } from './speech.service';
 
 @Controller('speech')
 export class SpeechController {
-  constructor(private readonly speechService: speechService_1.SpeechService) {}
+  constructor(private readonly speechService: SpeechService) {}
 
   // ──────────────────────────────────────────
   // HEALTH CHECK
@@ -56,7 +56,7 @@ export class SpeechController {
   async transcribeUpload(
     @UploadedFile() file: Express.Multer.File,
     @Body('language') language = 'en-IN',
-    @Body('model') model: speechService_1.SpeechModel = 'chirp_2',
+    @Body('model') model: SpeechModel = 'chirp_2',
     @Body('alternativeLanguages') altLangs?: string,
   ) {
     if (!file) {
@@ -118,9 +118,9 @@ export class SpeechController {
   async transcribeRaw(
     @Body('audioBase64') audioBase64: string,
     @Body('language') language = 'en-IN',
-    @Body('encoding') encoding: speechService_1.AudioEncoding = 'LINEAR16',
+    @Body('encoding') encoding: AudioEncoding = 'LINEAR16',
     @Body('sampleRate') sampleRate = 16000,
-    @Body('model') model: speechService_1.SpeechModel = 'chirp_2',
+    @Body('model') model: SpeechModel = 'chirp_2',
     @Body('alternativeLanguages') altLangs?: string,
   ) {
     if (!audioBase64) {
